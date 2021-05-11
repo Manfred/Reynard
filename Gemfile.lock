@@ -1,0 +1,60 @@
+PATH
+  remote: .
+  specs:
+    reynard (0.0.1)
+      minitest
+      multi_json
+      rack
+
+GEM
+  specs:
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.7.0)
+      public_suffix (>= 2.0.2, < 5.0)
+    ast (2.4.2)
+    crack (0.4.5)
+      rexml
+    hashdiff (1.0.1)
+    minitest (5.14.4)
+    multi_json (1.15.0)
+    parallel (1.20.1)
+    parser (3.0.1.1)
+      ast (~> 2.4.1)
+    public_suffix (4.0.6)
+    rack (2.2.3)
+    rainbow (3.0.0)
+    rake (13.0.3)
+    regexp_parser (2.1.1)
+    rexml (3.2.5)
+    rubocop (1.14.0)
+      parallel (~> 1.10)
+      parser (>= 3.0.0.0)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.8, < 3.0)
+      rexml
+      rubocop-ast (>= 1.5.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 1.4.0, < 3.0)
+    rubocop-ast (1.5.0)
+      parser (>= 3.0.1.1)
+    ruby-progressbar (1.11.0)
+    unicode-display_width (2.0.0)
+    webmock (3.12.2)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rake!
+  reynard!
+  rubocop!
+  webmock!
+
+BUNDLED WITH
+   2.2.17
