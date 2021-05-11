@@ -11,5 +11,12 @@ class Reynard
     test 'initializes with an OpenAPI filename' do
       assert_equal 'Library', @specification.dig('info', 'title')
     end
+
+    test 'digs into the specification through references' do
+      assert_equal(
+        %w[id name],
+        @specification.dig('components', 'schemas', 'Books', 'items', 'required')
+      )
+    end
   end
 end
