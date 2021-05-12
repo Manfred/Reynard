@@ -9,25 +9,9 @@ class Reynard
     end
 
     # Digs a value out of the specification, taking $ref into account.
-    #
-    # rubocop:disable Metrics/MethodLength
     def dig(*path)
-      current = @data
-      rest = path.dup
-      while rest.length.positive?
-        current = current[rest.first]
-        return unless current
-
-        rest.shift
-        next unless current.respond_to?(:key?) && current&.key?('$ref')
-
-        # We currenly only supply references inside the document starting with #/.
-        rest = current['$ref'][2..].split('/') + rest
-        current = @data
-      end
-      current
+      dig_into(@data, @data, path.dup)
     end
-    # rubocop:enable Metrics/MethodLength
 
     private
 
@@ -35,6 +19,21 @@ class Reynard
       File.open(@filename, encoding: 'UTF-8') do |file|
         YAML.safe_load(file)
       end
+    end
+
+    def dig_into(data, cursor, path)
+      while path.length.positive?
+        cursor = cursor[path.first]
+        return unless cursor
+
+        path.shift
+        next unless cursor.respond_to?(:key?) && cursor&.key?('$ref')
+
+        # We currenly only supply references inside the document starting with #/.
+        path = cursor['$ref'][2..].split('/') + path
+        cursor = data
+      end
+      cursor
     end
   end
 end

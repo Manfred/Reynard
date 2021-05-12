@@ -18,5 +18,16 @@ class Reynard
         @specification.dig('components', 'schemas', 'Books', 'items', 'required')
       )
     end
+
+    test 'digs repeatedly into the same specification without breaking it' do
+      assert_equal(
+        'books',
+        @specification.dig('tags', 0, 'name')
+      )
+      assert_equal(
+        'books',
+        @specification.dig('tags', 0, 'name')
+      )
+    end
   end
 end
