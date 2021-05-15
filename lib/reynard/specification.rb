@@ -13,6 +13,21 @@ class Reynard
       dig_into(@data, @data, path.dup)
     end
 
+    def operation(operation_name)
+      dig('paths').each do |path, operations|
+        operations.each do |verb, operation|
+          if operation_name == operation['operationId']
+            return Operation.new(
+              verb: verb,
+              path: path,
+              node: ['paths', path, verb]
+            )
+          end
+        end
+      end
+      nil
+    end
+
     private
 
     def read

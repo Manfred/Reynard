@@ -32,7 +32,61 @@ paths:
               schema:
                 $ref: "#/components/schemas/Books"
         default:
-          description: unexpected error
+          description: An error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /books/{id}:
+    get:
+      summary: Fetch book
+      description: Fetch all details for a book.
+      operationId: fetchBook
+      tags:
+        - books
+      parameters:
+        - name: id
+          in: path
+          description: The numeric ID of the book.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A book.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        default:
+          description: An error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /search/books:
+    get:
+      summary: Find books
+      description: Search books title and descriptions.
+      operationId: searchBooks
+      tags:
+        - books
+      parameters:
+        - name: q
+          in: query
+          description: A search string to look for during the search.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An array of books.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Books"
+        default:
+          description: An error.
           content:
             application/json:
               schema:
