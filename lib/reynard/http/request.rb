@@ -5,6 +5,7 @@ require 'rack'
 
 class Reynard
   class Http
+    # Configures and performs an HTTP request.
     class Request
       attr_reader :verb, :uri, :body, :params, :headers
 
