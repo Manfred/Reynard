@@ -5,6 +5,7 @@ AllCops:
 Layout/LineLength:
   Enabled: 100
 Metrics/MethodLength:
+  Max: 14
   Exclude:
     # Test methods are long.
     - test/**/*_test.rb
