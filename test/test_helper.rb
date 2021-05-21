@@ -7,6 +7,7 @@ FILES_ROOT = "#{TEST_ROOT}/files"
 
 require 'minitest/autorun'
 require 'webmock/minitest'
+require 'ostruct'
 
 $LOAD_PATH << File.expand_path('../lib', __dir__)
 

@@ -1,14 +1,21 @@
 # frozen_string_literal: true
 
 class Reynard
-  # Holds media type, response code, and node reference to a response in the API specification.
+  # Holds node reference and schema name to a media type in the API specification.
   class MediaType
-    attr_reader :media_type, :code, :node
+    attr_reader :node, :schema_name
 
-    def initialize(media_type:, code:, node:)
-      @media_type = media_type
-      @code = code
+    def initialize(node:, schema_name:)
       @node = node
+      @schema_name = schema_name
+    end
+
+    def media_type
+      @node[6]
+    end
+
+    def response_code
+      @node[4]
     end
   end
 end

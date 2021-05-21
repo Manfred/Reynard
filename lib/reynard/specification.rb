@@ -16,16 +16,29 @@ class Reynard
     def operation(operation_name)
       dig('paths').each do |path, operations|
         operations.each do |verb, operation|
-          if operation_name == operation['operationId']
-            return Operation.new(
-              verb: verb,
-              path: path,
-              node: ['paths', path, verb]
-            )
-          end
+          return Operation.new(node: ['paths', path, verb]) if operation_name == operation['operationId']
         end
       end
       nil
+    end
+
+    def media_type(operation_node, response_code, media_type)
+      responses = dig(*operation_node, 'responses')
+      response_code = responses.key?(response_code) ? response_code : 'default'
+      response = responses.dig(response_code, 'content', media_type)
+      return unless response
+
+      MediaType.new(
+        node: [*operation_node, 'responses', response_code, 'content', media_type],
+        schema_name: schema_name(response)
+      )
+    end
+
+    def schema(media_type_node)
+      schema = dig(*media_type_node, 'schema')
+      return unless schema
+
+      Schema.new(node: [*media_type_node, 'schema'], object_type: schema['type'])
     end
 
     private
@@ -49,6 +62,15 @@ class Reynard
         cursor = data
       end
       cursor
+    end
+
+    def schema_name(response)
+      ref = response.dig('schema', '$ref')
+      ref&.split('/')&.last
+    end
+
+    def object_name(_schema)
+      'Book'
     end
   end
 end

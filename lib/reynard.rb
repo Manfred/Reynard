@@ -11,7 +11,12 @@ class Reynard
 
   autoload :Context, 'reynard/context'
   autoload :Http, 'reynard/http'
+  autoload :MediaType, 'reynard/media_type'
+  autoload :Model, 'reynard/model'
+  autoload :Models, 'reynard/models'
+  autoload :ObjectBuilder, 'reynard/object_builder'
   autoload :Operation, 'reynard/operation'
+  autoload :Schema, 'reynard/schema'
   autoload :Specification, 'reynard/specification'
   autoload :VERSION, 'reynard/version'
 

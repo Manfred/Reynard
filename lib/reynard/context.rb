@@ -51,10 +51,21 @@ class Reynard
 
     def execute
       each_url do |url|
-        result = perform_request(url)
-        return result if result
+        http_response = perform_request(url)
+        media_type = @specification.media_type(
+          @operation.node,
+          http_response.code,
+          http_response['Content-Type'].split(';').first
+        )
+        next unless media_type
+
+        schema = @specification.schema(media_type.node)
+        return ObjectBuilder.new(
+          media_type: media_type,
+          schema: schema,
+          http_response: http_response
+        ).call
       end
-      nil
     end
 
     private
