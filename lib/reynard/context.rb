@@ -3,8 +3,9 @@
 class Reynard
   # Builds and keeps context for a single request to an endpoint.
   class Context
-    def initialize(specification:, operation: nil, params: nil)
+    def initialize(specification:, base_url: nil, operation: nil, params: nil)
       @specification = specification
+      @base_url = base_url || find_base_url
       @operation = operation
       @params = params ? params.transform_keys(&:to_s) : nil
     end
@@ -18,6 +19,8 @@ class Reynard
     end
 
     def path
+      return unless @operation
+
       grouped_params.fetch('path', {}).inject(@operation.path.dup) do |path, (name, value)|
         path.gsub("{#{name}}", value.to_s)
       end
@@ -27,15 +30,23 @@ class Reynard
       query? ? "#{path}?#{query}" : path
     end
 
-    def each_url
-      @specification.dig('servers').each do |server|
-        yield "#{server['url']}#{full_path}"
-      end
+    def url
+      "#{@base_url}#{full_path}"
+    end
+
+    def base_url(base_url)
+      self.class.new(
+        specification: @specification,
+        base_url: base_url,
+        operation: @operation,
+        params: @params
+      )
     end
 
     def operation(operation_name)
       self.class.new(
         specification: @specification,
+        base_url: @base_url,
         operation: @specification.operation(operation_name),
         params: @params
       )
@@ -44,31 +55,32 @@ class Reynard
     def params(**params)
       self.class.new(
         specification: @specification,
+        base_url: @base_url,
         operation: @operation,
         params: @params ? @params.merge(params) : params
       )
     end
 
     def execute
-      each_url do |url|
-        http_response = perform_request(url)
-        media_type = @specification.media_type(
-          @operation.node,
-          http_response.code,
-          http_response['Content-Type'].split(';').first
-        )
-        next unless media_type
-
-        schema = @specification.schema(media_type.node)
-        return ObjectBuilder.new(
-          media_type: media_type,
-          schema: schema,
-          http_response: http_response
-        ).call
-      end
+      http_response = perform_request(url)
+      media_type = @specification.media_type(
+        @operation.node,
+        http_response.code,
+        http_response['Content-Type'].split(';').first
+      )
+      schema = @specification.schema(media_type.node)
+      ObjectBuilder.new(
+        media_type: media_type,
+        schema: schema,
+        http_response: http_response
+      ).call
     end
 
     private
+
+    def find_base_url
+      @specification.servers.first&.url
+    end
 
     def grouped_params
       @grouped_params ||= @params ? build_grouped_params : {}

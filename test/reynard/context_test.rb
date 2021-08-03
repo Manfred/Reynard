@@ -8,6 +8,24 @@ class Reynard
       @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
     end
 
+    test 'returns a specific URL as its base URL' do
+      base_url = 'http://test.example.com/v1'
+      assert_equal(
+        base_url,
+        Reynard::Context.new(
+          specification: @specification,
+          base_url: base_url
+        ).url
+      )
+    end
+
+    test 'returns its first server URL as its base URL' do
+      assert_equal(
+        'http://example.com/v1',
+        Reynard::Context.new(specification: @specification).url
+      )
+    end
+
     test 'does not have a query without params' do
       refute(
         Reynard::Context.new(
@@ -69,26 +87,22 @@ class Reynard
       )
     end
 
-    test 'builds urls with parameter in path' do
+    test 'builds url with parameter in path' do
       context = Reynard::Context.new(
         specification: @specification,
         operation: @specification.operation('fetchBook'),
         params: { id: 42 }
       )
-      urls = []
-      context.each_url { |url| urls << url }
-      assert_equal %w[http://example.com/v1/books/42], urls
+      assert_equal 'http://example.com/v1/books/42', context.url
     end
 
-    test 'builds urls with parameter in query' do
+    test 'builds url with parameter in query' do
       context = Reynard::Context.new(
         specification: @specification,
         operation: @specification.operation('searchBooks'),
         params: { q: '"Lucene Sky"' }
       )
-      urls = []
-      context.each_url { |url| urls << url }
-      assert_equal %w[http://example.com/v1/search/books?q=%22Lucene+Sky%22], urls
+      assert_equal 'http://example.com/v1/search/books?q=%22Lucene+Sky%22', context.url
     end
   end
 end

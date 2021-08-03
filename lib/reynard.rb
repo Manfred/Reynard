@@ -3,12 +3,13 @@
 require 'forwardable'
 require 'multi_json'
 require 'rack'
+require 'uri'
 
 # Reynard is a convenience class for configuring an HTTP request against an
 # OpenAPI specification.
 class Reynard
   extend Forwardable
-  def_delegators :build_context, :operation, :params
+  def_delegators :build_context, :base_url, :operation, :params
   def_delegators :@specification, :servers
 
   autoload :Context, 'reynard/context'
