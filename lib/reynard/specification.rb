@@ -13,6 +13,10 @@ class Reynard
       dig_into(@data, @data, path.dup)
     end
 
+    def servers
+      dig('servers').map { |attributes| Server.new(attributes) }
+    end
+
     def operation(operation_name)
       dig('paths').each do |path, operations|
         operations.each do |verb, operation|

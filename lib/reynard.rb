@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'forwardable'
 require 'multi_json'
 require 'rack'
 
@@ -8,6 +9,7 @@ require 'rack'
 class Reynard
   extend Forwardable
   def_delegators :build_context, :operation, :params
+  def_delegators :@specification, :servers
 
   autoload :Context, 'reynard/context'
   autoload :Http, 'reynard/http'
@@ -17,6 +19,7 @@ class Reynard
   autoload :ObjectBuilder, 'reynard/object_builder'
   autoload :Operation, 'reynard/operation'
   autoload :Schema, 'reynard/schema'
+  autoload :Server, 'reynard/server'
   autoload :Specification, 'reynard/specification'
   autoload :VERSION, 'reynard/version'
 

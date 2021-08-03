@@ -7,6 +7,18 @@ class ReynardTest < Reynard::Test
     @reynard = Reynard.new(filename: fixture_file('openapi/simple.yml'))
   end
 
+  test 'returns all available servers' do
+    servers = @reynard.servers
+    assert_equal 2, servers.length
+    assert_equal(
+      %w[
+        http://example.com/v1
+        http://staging.example.com/v1
+      ],
+      servers.map(&:url)
+    )
+  end
+
   test 'starts a context with an operation name' do
     context = @reynard.operation('listBooks')
     assert_equal '/books', context.path
