@@ -22,6 +22,7 @@ class Reynard
   autoload :Schema, 'reynard/schema'
   autoload :Server, 'reynard/server'
   autoload :Specification, 'reynard/specification'
+  autoload :Template, 'reynard/template'
   autoload :VERSION, 'reynard/version'
 
   def initialize(filename:)
