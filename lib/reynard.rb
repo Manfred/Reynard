@@ -19,6 +19,7 @@ class Reynard
   autoload :Models, 'reynard/models'
   autoload :ObjectBuilder, 'reynard/object_builder'
   autoload :Operation, 'reynard/operation'
+  autoload :RequestContext, 'reynard/request_context'
   autoload :Schema, 'reynard/schema'
   autoload :Server, 'reynard/server'
   autoload :Specification, 'reynard/specification'
