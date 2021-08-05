@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.license = 'MIT'
 
   spec.files = Dir.glob('lib/**/*') + [
-    'LICENSE.txt',
+    'LICENSE',
     'README.md'
   ]
   spec.require_paths = ['lib']
