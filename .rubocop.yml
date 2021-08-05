@@ -1,7 +1,6 @@
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 2.7
-
+  TargetRubyVersion: 3.0
 Layout/LineLength:
   Enabled: 100
 Metrics/ClassLength:
@@ -13,6 +12,8 @@ Metrics/MethodLength:
   Exclude:
     # Test methods are long.
     - test/**/*_test.rb
+Style/AsciiComments:
+  Enabled: false
 # The Specification class defines its own dig method and that must work with
 # a single argument.
 Style/SingleArgumentDig:
