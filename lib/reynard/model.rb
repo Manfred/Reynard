@@ -14,7 +14,7 @@ class Reynard
     end
 
     # Until we can set accessors based on the schema
-    def method_missing(attribute_name)
+    def method_missing(attribute_name, *)
       instance_variable_get("@#{attribute_name}")
     end
 
