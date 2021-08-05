@@ -3,13 +3,14 @@
 require 'forwardable'
 require 'multi_json'
 require 'rack'
+require 'yaml'
 require 'uri'
 
 # Reynard is a convenience class for configuring an HTTP request against an
 # OpenAPI specification.
 class Reynard
   extend Forwardable
-  def_delegators :build_context, :base_url, :operation, :params
+  def_delegators :build_context, :base_url, :operation, :headers, :params
   def_delegators :@specification, :servers
 
   autoload :Context, 'reynard/context'
@@ -24,6 +25,7 @@ class Reynard
   autoload :Server, 'reynard/server'
   autoload :Specification, 'reynard/specification'
   autoload :Template, 'reynard/template'
+  autoload :GroupedParameters, 'reynard/grouped_parameters'
   autoload :VERSION, 'reynard/version'
 
   def initialize(filename:)

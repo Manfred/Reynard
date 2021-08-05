@@ -19,13 +19,13 @@ class ReynardTest < Reynard::Test
     )
   end
 
-  test 'starts a context with a different base URL' do
+  test 'changes the base URL' do
     base_url = 'https://example.com/v2'
     context = @reynard.base_url(base_url)
     assert_equal base_url, context.url
   end
 
-  test 'starts a context by selecting a server' do
+  test 'updates the base URL by selecting a server' do
     base_url = @reynard.servers.map(&:url).find do |url|
       /staging/.match(url)
     end
@@ -33,14 +33,14 @@ class ReynardTest < Reynard::Test
     assert_equal 'http://staging.example.com/v1', context.url
   end
 
-  test 'starts a context with an operation name' do
+  test 'updates a context with an operation name' do
     context = @reynard.operation('listBooks')
     assert_equal '/books', context.path
   end
 
-  test 'starts a context with params' do
+  test 'updates a context with params' do
     context = @reynard.operation('listBooks').params(id: 42, order: 'desc')
-    assert_equal 'order=desc', context.query
+    assert_equal 'http://example.com/v1/books?id=42&order=desc', context.url
   end
 
   test 'performs a request that returns an object' do
