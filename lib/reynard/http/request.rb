@@ -7,14 +7,11 @@ class Reynard
   class Http
     # Configures and performs an HTTP request.
     class Request
-      attr_reader :verb, :uri, :body, :params, :headers
+      attr_reader :uri
 
-      def initialize(verb, url:, **options)
-        @verb = verb
-        @uri = URI(url)
-        @params = options[:params]
-        @body = options[:body]
-        @headers = options[:headers]
+      def initialize(request_context:)
+        @request_context = request_context
+        @uri = URI(@request_context.url)
       end
 
       def perform
@@ -24,7 +21,7 @@ class Reynard
       private
 
       def build_request
-        case verb
+        case @request_context.verb
         when 'get'
           build_http_get
         when 'post'
@@ -39,12 +36,12 @@ class Reynard
       end
 
       def build_http_get
-        Net::HTTP::Get.new(uri, headers)
+        Net::HTTP::Get.new(uri, @request_context.headers)
       end
 
       def build_http_post
-        post = Net::HTTP::Post.new(uri, headers)
-        post.body = body
+        post = Net::HTTP::Post.new(uri, @request_context.headers)
+        post.body = @request_context.body
         post
       end
     end
