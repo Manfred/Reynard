@@ -30,6 +30,20 @@ class Reynard
       )
     end
 
+    test 'returns servers' do
+      assert_equal(
+        %w[
+          http://example.com/v1
+          http://staging.example.com/v1
+        ],
+        @specification.servers.map(&:url)
+      )
+    end
+
+    test 'uses the first server URL as the default base URL' do
+      assert_equal 'http://example.com/v1', @specification.default_base_url
+    end
+
     test 'finds an operation based on their operation id' do
       operation = @specification.operation('listBooks')
       assert_equal(%w[paths /books get], operation.node)

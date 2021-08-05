@@ -17,6 +17,10 @@ class Reynard
       dig('servers').map { |attributes| Server.new(attributes) }
     end
 
+    def default_base_url
+      servers.first&.url
+    end
+
     def operation(operation_name)
       dig('paths').each do |path, operations|
         operations.each do |verb, operation|
