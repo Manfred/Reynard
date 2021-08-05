@@ -22,6 +22,11 @@ class Reynard
       assert_nil @request_context.query
     end
 
+    test 'does not return a query when query params are empty' do
+      @request_context.params = {}
+      assert_nil @request_context.query
+    end
+
     test 'returns a URL safe query when query params are set' do
       @request_context.params = { 'query' => { 'title' => '🧘', 'count' => 12 } }
       assert_equal 'title=%F0%9F%A7%98&count=12', @request_context.query

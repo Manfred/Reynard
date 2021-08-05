@@ -42,7 +42,9 @@ class Reynard
     private
 
     def query_params?
-      params&.key?('query')
+      return false unless params
+
+      !params.fetch('query', {}).empty?
     end
 
     def path_params?
