@@ -5,7 +5,7 @@ class Reynard
   #
   # See: RFC6570
   class Template
-    VARIABLE_RE = /\{([^}]+)\}/
+    VARIABLE_RE = /\{([^}]+)\}/.freeze
 
     def initialize(template, params)
       @template = template
