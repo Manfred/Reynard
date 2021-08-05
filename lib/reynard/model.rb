@@ -18,7 +18,7 @@ class Reynard
       instance_variable_get("@#{attribute_name}")
     end
 
-    def respond_to_missing?(attribute_name)
+    def respond_to_missing?(attribute_name, *)
       !!instance_variable_get("@#{attribute_name}")
     end
   end
