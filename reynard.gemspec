@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
     'Manfred Stienstra'
   ]
   spec.email = [
-    'manfred.stienstra@nedap.com'
+    'manfred@fngtps.com'
   ]
   spec.summary = <<-SUMMARY
   Minimal OpenAPI client.
@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   Reynard is an OpenAPI client for Ruby. It operates directly on the OpenAPI specification without
   the need to generate any source code.
   DESCRIPTION
-  spec.homepage = 'https://github.com/nedap/reynard'
+  spec.homepage = 'https://github.com/Manfred/reynard'
   spec.license = 'MIT'
 
   spec.files = Dir.glob('lib/**/*') + [
