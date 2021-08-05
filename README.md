@@ -9,6 +9,10 @@ Reynard is an OpenAPI client for Ruby. It operates directly on the OpenAPI speci
 reynard = Reynard.new(filename: 'openapi.yml')
 ```
 
+## Installing
+
+Reynard is distributed as a gem called `reynard`.
+
 ## Choosing a server
 
 An OpenAPI specification may specify multiple servers. There is no automated way to select the ‘correct’ server so Reynard uses the first one by default.
@@ -52,3 +56,7 @@ employee = reynard.
   params(uuid: uuid).
   execute
 ```
+
+## Copyright and other legal
+
+See LICENCE.
