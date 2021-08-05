@@ -44,6 +44,33 @@ class Reynard
       assert_equal 'http://example.com/v1', @specification.default_base_url
     end
 
+    test 'groups query params for an operation with query params' do
+      operation = @specification.operation('searchBooks')
+      params = { 'q' => 'Aldous Huxley' }
+      assert_equal(
+        { 'query' => params },
+        @specification.build_grouped_params(operation.node, params)
+      )
+    end
+
+    test 'groups path params for an operation with path params' do
+      operation = @specification.operation('fetchBook')
+      params = { 'id' => 12 }
+      assert_equal(
+        { 'path' => params },
+        @specification.build_grouped_params(operation.node, params)
+      )
+    end
+
+    test 'groups query params for an operation without params in the specification' do
+      operation = @specification.operation('sampleBook')
+      params = { 'q' => 'Aldous Huxley' }
+      assert_equal(
+        { 'query' => params },
+        @specification.build_grouped_params(operation.node, params)
+      )
+    end
+
     test 'finds an operation based on their operation id' do
       operation = @specification.operation('listBooks')
       assert_equal(%w[paths /books get], operation.node)

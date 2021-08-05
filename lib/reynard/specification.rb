@@ -21,6 +21,18 @@ class Reynard
       servers.first&.url
     end
 
+    # The specification tells us where a parameter should be included, they can be placed in path,
+    # query, header, or cookie. In order to get them in the correct place, we group them by their
+    # location.
+    #
+    #   build_grouped_params(operation_node, { 'q' => 'face' }) #=>
+    #     { 'query' => { 'q' => 'face' } }
+    def build_grouped_params(operation_node, params)
+      return {} unless params
+
+      GroupedParameters.new(dig(*operation_node, 'parameters'), params).to_h
+    end
+
     def operation(operation_name)
       dig('paths').each do |path, operations|
         operations.each do |verb, operation|
