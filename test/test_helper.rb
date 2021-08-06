@@ -4,6 +4,7 @@ GEM_ROOT = File.expand_path('..', __dir__)
 TEST_ROOT = __dir__
 FIXTURES_ROOT = "#{TEST_ROOT}/fixtures"
 FILES_ROOT = "#{TEST_ROOT}/files"
+SUPPORT_ROOT = "#{TEST_ROOT}/support"
 
 require 'minitest/autorun'
 require 'webmock/minitest'
@@ -13,13 +14,10 @@ $LOAD_PATH << File.expand_path('../lib', __dir__)
 
 require 'reynard'
 
-def root
-  File.expand_path('..', __dir__)
-end
-
 def load_support
-  Dir[File.join(root, 'test/support/**/*.rb')].sort.each { |file| require file }
+  Dir[File.join(SUPPORT_ROOT, '**/*.rb')].sort.each { |file| require file }
 end
+load_support
 
 class Reynard
   class Test < Minitest::Test
