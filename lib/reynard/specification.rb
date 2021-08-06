@@ -45,7 +45,7 @@ class Reynard
     def media_type(operation_node, response_code, media_type)
       responses = dig(*operation_node, 'responses')
       response_code = responses.key?(response_code) ? response_code : 'default'
-      response = responses.dig(response_code, 'content', media_type)
+      response, media_type = media_type_response(responses, response_code, media_type)
       return unless response
 
       MediaType.new(
@@ -54,11 +54,29 @@ class Reynard
       )
     end
 
+    def media_type_response(responses, response_code, media_type)
+      responses.dig(response_code, 'content').each do |expression, response|
+        return response, expression if self.class.media_type_matches?(media_type, expression)
+      end
+      nil
+    end
+
     def schema(media_type_node)
       schema = dig(*media_type_node, 'schema')
       return unless schema
 
-      Schema.new(node: [*media_type_node, 'schema'], object_type: schema['type'])
+      Schema.new(
+        node: [*media_type_node, 'schema'],
+        object_type: schema['type'],
+        item_schema_name: item_schema_name(schema)
+      )
+    end
+
+    def self.media_type_matches?(media_type, expression)
+      return true unless media_type
+      return true if expression == media_type
+
+      false
     end
 
     private
@@ -86,6 +104,11 @@ class Reynard
 
     def schema_name(response)
       ref = response.dig('schema', '$ref')
+      ref&.split('/')&.last
+    end
+
+    def item_schema_name(schema)
+      ref = schema.dig('items', '$ref')
       ref&.split('/')&.last
     end
 

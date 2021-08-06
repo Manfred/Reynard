@@ -120,7 +120,7 @@ class Reynard
       assert_nil @specification.media_type(operation.node, '200', 'application/octet-stream')
     end
 
-    test 'finds a schema based relative to a media type' do
+    test 'finds a schema relative to a media type' do
       operation = @specification.operation('listBooks')
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
@@ -129,6 +129,7 @@ class Reynard
         schema.node
       )
       assert_equal('array', schema.object_type)
+      assert_equal('Book', schema.item_schema_name)
 
       operation = @specification.operation('fetchBook')
       media_type = @specification.media_type(operation.node, '200', 'application/json')
@@ -138,6 +139,29 @@ class Reynard
         schema.node
       )
       assert_equal('object', schema.object_type)
+      assert_nil schema.item_schema_name
+    end
+
+    test 'uses first response when HTTP response does not have a media type' do
+      operation = @specification.operation('listBooks')
+      media_type = @specification.media_type(operation.node, '200', nil)
+      schema = @specification.schema(media_type.node)
+      assert_equal(
+        %w[paths /books get responses 200 content application/json schema],
+        schema.node
+      )
+      assert_equal('array', schema.object_type)
+      assert_equal('Book', schema.item_schema_name)
+
+      operation = @specification.operation('fetchBook')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      schema = @specification.schema(media_type.node)
+      assert_equal(
+        %w[paths /books/{id} get responses 200 content application/json schema],
+        schema.node
+      )
+      assert_equal('object', schema.object_type)
+      assert_nil schema.item_schema_name
     end
   end
 end
