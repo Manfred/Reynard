@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '> 2.7'
 
   spec.add_dependency 'multi_json'
+  spec.add_dependency 'net-http-persistent'
   spec.add_dependency 'rack'
   spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'rake'
