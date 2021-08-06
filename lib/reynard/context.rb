@@ -53,7 +53,7 @@ class Reynard
       media_type = @specification.media_type(
         @request_context.operation.node,
         http_response.code,
-        http_response['Content-Type'].split(';').first
+        http_response.content_type
       )
       ObjectBuilder.new(
         media_type: media_type,

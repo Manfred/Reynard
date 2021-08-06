@@ -68,5 +68,19 @@ class Reynard
         @context.operation('fetchBook').params(id: 42).url
       )
     end
+
+    test 'executes a request for a collection' do
+      stub_request(:get, 'http://example.com/v1/books').and_return(
+        body: '[{"id":1},{"id":2},{"id":3}]'
+      )
+      result = @context.operation('listBooks').execute
+      assert_equal [1, 2, 3], result.map(&:id)
+    end
+
+    test 'executes a request for a single resource' do
+      stub_request(:get, 'http://example.com/v1/books/1').and_return(body: '{"id":1}')
+      result = @context.operation('fetchBook').params(id: 1).execute
+      assert_equal 1, result.id
+    end
   end
 end
