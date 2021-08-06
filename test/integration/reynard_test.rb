@@ -10,7 +10,7 @@ module Integration
       @reynard = Reynard.new(
         filename: fixture_file('openapi/simple.yml')
       ).base_url(
-        "http://localhost:#{SimpleService.options.port}"
+        "http://127.0.0.1:#{SimpleService.options.port}"
       )
     end
 
