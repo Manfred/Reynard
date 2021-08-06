@@ -16,6 +16,14 @@ class Reynard
       refute @model.respond_to?(:unknown, private: false)
     end
 
+    test 'can never respond to an attribute that is an invalid instance variable' do
+      refute @model.respond_to?(:unknown?, private: false)
+    end
+
+    test 'raises NoMethodError calling an attribute method that is an invalid instance variable' do
+      assert_raises(NoMethodError) { @model.unknown? }
+    end
+
     test 'returns correct values for attributes' do
       assert_equal 'James', @model.name
       assert_equal 12, @model.age

@@ -16,10 +16,14 @@ class Reynard
     # Until we can set accessors based on the schema
     def method_missing(attribute_name, *)
       instance_variable_get("@#{attribute_name}")
+    rescue NameError
+      raise NoMethodError, "undefined method `#{attribute_name}' for #{inspect}"
     end
 
     def respond_to_missing?(attribute_name, *)
-      !!instance_variable_get("@#{attribute_name}")
+      !instance_variable_get("@#{attribute_name}").nil?
+    rescue NameError
+      false
     end
   end
 end
