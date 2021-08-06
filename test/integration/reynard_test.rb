@@ -40,6 +40,18 @@ module Integration
       end
     end
 
+    test 'performs threaded requests' do
+      with_simple_service do
+        threads = []
+        3.times do
+          threads << Thread.new do
+            assert_equal 1, @reynard.operation('fetchBook').params(id: 1).execute.id
+          end
+        end
+        threads.map(&:join)
+      end
+    end
+
     private
 
     def with_simple_service
