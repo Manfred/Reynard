@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'net/http/persistent'
 require 'forwardable'
 require 'multi_json'
 require 'rack'
@@ -30,6 +31,14 @@ class Reynard
 
   def initialize(filename:)
     @specification = Specification.new(filename: filename)
+  end
+
+  def self.http
+    @http ||= begin
+      http = Net::HTTP::Persistent.new(name: 'Reynard')
+      http.debug_output = $stderr if ENV['DEBUG']
+      http
+    end
   end
 
   private

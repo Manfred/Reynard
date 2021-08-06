@@ -15,7 +15,7 @@ class Reynard
       end
 
       def perform
-        build_http.request(build_request)
+        Reynard.http.request(uri, build_request)
       end
 
       private
@@ -27,12 +27,6 @@ class Reynard
         when 'post'
           build_http_post
         end
-      end
-
-      def build_http
-        http = Net::HTTP.new(uri.hostname, uri.port)
-        http.set_debug_output($stderr) if ENV['DEBUG']
-        http
       end
 
       def build_http_get
