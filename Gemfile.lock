@@ -20,7 +20,7 @@ GEM
     multi_json (1.15.0)
     net-http-persistent (4.0.1)
       connection_pool (~> 2.2)
-    parallel (1.20.1)
+    parallel (1.21.0)
     parser (3.0.2.0)
       ast (~> 2.4.1)
     public_suffix (4.0.6)
@@ -29,19 +29,19 @@ GEM
     rake (13.0.6)
     regexp_parser (2.1.1)
     rexml (3.2.5)
-    rubocop (1.18.4)
+    rubocop (1.21.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
-      rubocop-ast (>= 1.8.0, < 2.0)
+      rubocop-ast (>= 1.9.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.8.0)
+    rubocop-ast (1.11.0)
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
-    unicode-display_width (2.0.0)
+    unicode-display_width (2.1.0)
     webmock (3.14.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
@@ -60,4 +60,4 @@ DEPENDENCIES
   webrick
 
 BUNDLED WITH
-   2.2.25
+   2.2.26
