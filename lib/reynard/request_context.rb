@@ -7,6 +7,7 @@ class Reynard
     :operation,
     :headers,
     :params,
+    :body,
     keyword_init: true
   ) do
     def verb
