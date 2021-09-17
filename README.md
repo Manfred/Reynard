@@ -57,6 +57,15 @@ employee = reynard.
   execute
 ```
 
+When an operation requires a body, you can add it as structured data.
+
+```ruby
+employee = reynard.
+  operation('createEmployee').
+  body(name: 'Sam Seven').
+  execute
+```
+
 ## Copyright and other legal
 
 See LICENCE.
