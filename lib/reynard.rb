@@ -15,6 +15,7 @@ class Reynard
   def_delegators :@specification, :servers
 
   autoload :Context, 'reynard/context'
+  autoload :GroupedParameters, 'reynard/grouped_parameters'
   autoload :Http, 'reynard/http'
   autoload :MediaType, 'reynard/media_type'
   autoload :Model, 'reynard/model'
@@ -23,10 +24,10 @@ class Reynard
   autoload :Operation, 'reynard/operation'
   autoload :RequestContext, 'reynard/request_context'
   autoload :Schema, 'reynard/schema'
+  autoload :SerializedBody, 'reynard/serialized_body'
   autoload :Server, 'reynard/server'
   autoload :Specification, 'reynard/specification'
   autoload :Template, 'reynard/template'
-  autoload :GroupedParameters, 'reynard/grouped_parameters'
   autoload :VERSION, 'reynard/version'
 
   def initialize(filename:)
