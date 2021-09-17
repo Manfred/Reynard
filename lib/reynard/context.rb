@@ -24,10 +24,10 @@ class Reynard
       copy(params: @specification.build_grouped_params(@request_context.operation.node, params))
     end
 
-    def body(...)
+    def body(data)
       return unless @request_context.operation
 
-      serialized_body = @specification.build_body(@request_context.operation.node, ...)
+      serialized_body = @specification.build_body(@request_context.operation.node, data)
       return unless serialized_body
 
       copy(

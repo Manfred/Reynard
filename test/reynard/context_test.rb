@@ -69,10 +69,6 @@ class Reynard
       )
     end
 
-    test 'does include a body when no operation is selected' do
-      assert_nil @context.body
-    end
-
     test 'executes a request for a collection' do
       stub_request(:get, 'http://example.com/v1/books').and_return(
         body: '[{"id":1},{"id":2},{"id":3}]'
