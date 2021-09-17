@@ -33,6 +33,12 @@ class Reynard
       GroupedParameters.new(dig(*operation_node, 'parameters'), params).to_h
     end
 
+    # Returns a serialized body instance to serialize a request body and figure out the request
+    # headers.
+    def build_body(operation_node, ...)
+      SerializedBody.new(dig(*operation_node, 'requestBody', 'content'), ...)
+    end
+
     def operation(operation_name)
       dig('paths').each do |path, operations|
         operations.each do |verb, operation|
@@ -44,7 +50,7 @@ class Reynard
 
     def media_type(operation_node, response_code, media_type)
       responses = dig(*operation_node, 'responses')
-      response_code = responses.key?(response_code) ? response_code : 'default'
+      response_code = 'default' unless responses.key?(response_code)
       response, media_type = media_type_response(responses, response_code, media_type)
       return unless response
 
