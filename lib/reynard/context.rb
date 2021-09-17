@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'ostruct'
+
 class Reynard
   # Exposes a public interface to build a request context.
   class Context
@@ -67,11 +69,26 @@ class Reynard
         http_response.code,
         http_response.content_type
       )
+      if media_type
+        build_object_with_media_type(http_response, media_type)
+      else
+        build_object_without_media_type(http_response)
+      end
+    end
+
+    def build_object_with_media_type(http_response, media_type)
       ObjectBuilder.new(
         media_type: media_type,
         schema: @specification.schema(media_type.node),
         http_response: http_response
       ).call
+    end
+
+    def build_object_without_media_type(http_response)
+      # Try to parse the response as JSON and give up otherwise.
+      OpenStruct.new(MultiJson.load(http_response.body))
+    rescue StandardError
+      http_response.body
     end
   end
 end

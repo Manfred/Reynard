@@ -100,4 +100,21 @@ class Reynard
       assert_equal 'Howdy', result.name
     end
   end
+
+  class BareContextTest < Reynard::Test
+    def setup
+      @specification = Specification.new(filename: fixture_file('openapi/bare.yml'))
+      @request_context = RequestContext.new(base_url: @specification.default_base_url, headers: {})
+      @context = Context.new(specification: @specification, request_context: @request_context)
+    end
+
+    test 'returns a generic result when response is not defined' do
+      stub_request(:get, 'http://example.com/clowns').and_return(
+        status: 500, body: '{"message":"Howdy"}'
+      )
+      result = @context.operation('listClowns').execute
+      assert_kind_of OpenStruct, result
+      assert_equal 'Howdy', result.message
+    end
+  end
 end
