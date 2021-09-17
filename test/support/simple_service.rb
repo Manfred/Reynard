@@ -18,26 +18,34 @@ class SimpleService
     def service(http_request, http_response)
       case http_request.path
       when '/books'
-        case http_request.request_method
-        when 'GET'
-          http_response.body = MultiJson.dump(all)
-        when 'POST'
-          book = add(MultiJson.load(http_request.body))
-          http_response.body = MultiJson.dump(book)
-        end
+        handle_collection(http_request, http_response)
       when %r{/books/(\d+)}
-        book = find(Regexp.last_match(1).to_i)
-        if book
-          http_response.body = MultiJson.dump(book)
-        else
-          respond_with_not_found(http_response)
-        end
+        handle_member(Regexp.last_match(1).to_i, http_response)
       else
         respond_with_not_found(http_response)
       end
     end
 
     private
+
+    def handle_collection(http_request, http_response)
+      case http_request.request_method
+      when 'GET'
+        http_response.body = MultiJson.dump(all)
+      when 'POST'
+        book = add(MultiJson.load(http_request.body))
+        http_response.body = MultiJson.dump(book)
+      end
+    end
+
+    def handle_member(id, http_response)
+      book = find(id)
+      if book
+        http_response.body = MultiJson.dump(book)
+      else
+        respond_with_not_found(http_response)
+      end
+    end
 
     def respond_with_not_found(http_response)
       http_response.status = 404
