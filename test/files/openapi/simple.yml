@@ -38,6 +38,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+    post:
+      summary: Create book
+      description: Create a new book.
+      operationId: createBook
+      tags:
+        - books
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Book"
+      responses:
+        '200':
+          description: A book.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        default:
+          description: An error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /books/{id}:
     get:
       summary: Fetch book
