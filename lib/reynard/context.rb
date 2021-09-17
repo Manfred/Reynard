@@ -24,8 +24,20 @@ class Reynard
       copy(params: @specification.build_grouped_params(@request_context.operation.node, params))
     end
 
+    def body(...)
+      return unless @request_context.operation
+
+      serialized_body = @specification.build_body(@request_context.operation.node, ...)
+      return unless serialized_body
+
+      copy(
+        headers: @request_context.headers.merge(serialized_body.headers),
+        body: serialized_body.to_s
+      )
+    end
+
     def headers(headers)
-      copy(headers: headers)
+      copy(headers: @request_context.merge(headers))
     end
 
     def execute
@@ -35,7 +47,7 @@ class Reynard
     private
 
     def build_request_context
-      RequestContext.new(base_url: @specification.default_base_url)
+      RequestContext.new(base_url: @specification.default_base_url, headers: {})
     end
 
     def copy(**properties)

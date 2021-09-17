@@ -6,7 +6,7 @@ class Reynard
   class ContextTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
-      @request_context = RequestContext.new(base_url: @specification.default_base_url)
+      @request_context = RequestContext.new(base_url: @specification.default_base_url, headers: {})
       @context = Context.new(specification: @specification, request_context: @request_context)
     end
 
@@ -69,6 +69,10 @@ class Reynard
       )
     end
 
+    test 'does include a body when no operation is selected' do
+      assert_nil @context.body
+    end
+
     test 'executes a request for a collection' do
       stub_request(:get, 'http://example.com/v1/books').and_return(
         body: '[{"id":1},{"id":2},{"id":3}]'
@@ -81,6 +85,13 @@ class Reynard
       stub_request(:get, 'http://example.com/v1/books/1').and_return(body: '{"id":1}')
       result = @context.operation('fetchBook').params(id: 1).execute
       assert_equal 1, result.id
+    end
+
+    test 'executes a request with a body' do
+      stub_request(:post, 'http://example.com/v1/books').and_return(body: '{"id":1,"name":"Howdy"}')
+      result = @context.operation('createBook').body(name: 'Howdy').execute
+      assert_equal 1, result.id
+      assert_equal 'Howdy', result.name
     end
   end
 end
