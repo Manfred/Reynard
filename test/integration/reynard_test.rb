@@ -32,6 +32,15 @@ module Integration
       end
     end
 
+    test 'creates an object' do
+      with_simple_service do
+        name = 'An unexpected occurance'
+        book = @reynard.operation('createBook').body({ 'name' => name }).execute
+        assert_kind_of Reynard::Models::Book, book
+        assert_equal name, book.name
+      end
+    end
+
     test 'returns an error when fetching an object fails' do
       with_simple_service do
         error = @reynard.operation('fetchBook').params(id: -1).execute

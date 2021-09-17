@@ -18,7 +18,13 @@ class SimpleService
     def service(http_request, http_response)
       case http_request.path
       when '/books'
-        http_response.body = MultiJson.dump(all)
+        case http_request.request_method
+        when 'GET'
+          http_response.body = MultiJson.dump(all)
+        when 'POST'
+          book = add(MultiJson.load(http_request.body))
+          http_response.body = MultiJson.dump(book)
+        end
       when %r{/books/(\d+)}
         book = find(Regexp.last_match(1).to_i)
         if book
@@ -44,6 +50,11 @@ class SimpleService
 
     def find(id)
       @books.find { |book| book['id'] == id }
+    end
+
+    def add(attributes)
+      @books << attributes.merge('id' => @books.map { |book| book['id'] }.max.to_i + 1)
+      @books.last
     end
   end
 
