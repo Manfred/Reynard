@@ -37,7 +37,7 @@ class Reynard
     end
 
     def headers(headers)
-      copy(headers: @request_context.merge(headers))
+      copy(headers: @request_context.headers.merge(headers))
     end
 
     def execute

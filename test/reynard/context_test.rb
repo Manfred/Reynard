@@ -87,6 +87,16 @@ class Reynard
       assert_equal 1, result.id
     end
 
+    test 'executes a request for a single resource with a specific content-type' do
+      stub_request(:get, 'http://example.com/v1/books/1').and_return(body: '{"id":1}')
+      result = @context
+               .operation('fetchBook')
+               .headers('Accept' => 'application/json')
+               .params(id: 1)
+               .execute
+      assert_equal 1, result.id
+    end
+
     test 'executes a request with a body' do
       stub_request(:post, 'http://example.com/v1/books').and_return(body: '{"id":1,"name":"Howdy"}')
       result = @context.operation('createBook').body(name: 'Howdy').execute
