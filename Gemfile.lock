@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    reynard (0.0.5)
+    reynard (0.0.6)
       multi_json
       net-http-persistent
       rack
@@ -60,4 +60,4 @@ DEPENDENCIES
   webrick
 
 BUNDLED WITH
-   2.2.26
+   2.2.27
