@@ -61,7 +61,10 @@ class Reynard
     end
 
     def media_type_response(responses, response_code, media_type)
-      responses.dig(response_code, 'content').each do |expression, response|
+      defined_responses = responses.dig(response_code, 'content')
+      return unless defined_responses&.any?
+
+      defined_responses.each do |expression, response|
         return response, expression if self.class.media_type_matches?(media_type, expression)
       end
       nil

@@ -178,4 +178,15 @@ class Reynard
       assert_nil schema.item_schema_name
     end
   end
+
+  class BareSpecificationTest < Reynard::Test
+    def setup
+      @specification = Specification.new(filename: fixture_file('openapi/bare.yml'))
+    end
+
+    test 'does not return a media type when the returned response code is not described' do
+      operation = @specification.operation('listClowns')
+      assert_nil @specification.media_type(operation.node, '500', nil)
+    end
+  end
 end

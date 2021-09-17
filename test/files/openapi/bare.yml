@@ -1,0 +1,22 @@
+openapi: "3.0.0"
+info:
+  title: Clowns
+  version: 1.0.0
+  contact: {}
+  description: Making you laugh since 2010.
+servers:
+  - url: http://example.com
+tags:
+  - name: clowns
+    description: Clowning
+paths:
+  /clowns:
+    get:
+      summary: List all clowns
+      description: Lists all available clowns.
+      operationId: listClowns
+      tags:
+        - clowns
+      responses:
+        '200':
+          description: A clown.
