@@ -89,6 +89,53 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+    put: &update
+      summary: Update book
+      description: Update details for a book.
+      operationId: updateBook
+      tags:
+        - books
+      parameters:
+        - name: id
+          in: path
+          description: The numeric ID of the book.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A book.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        default:
+          description: An error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      <<: *update
+      operationId: updateBook2
+    delete:
+      summary: Delete book
+      description: Delete a book.
+      operationId: deleteBook
+      tags:
+        - books
+      parameters:
+        - name: id
+          in: path
+          description: The numeric ID of the book.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Book was deleted.
+        default:
+          description: Book was deleted.
   /books/sample:
     get:
       summary: Fetch a random book
