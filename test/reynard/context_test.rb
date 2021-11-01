@@ -93,11 +93,51 @@ class Reynard
       assert_equal 1, result.id
     end
 
-    test 'executes a request with a body' do
+    test 'executes a POST request with a body' do
       stub_request(:post, 'http://example.com/v1/books').and_return(body: '{"id":1,"name":"Howdy"}')
       result = @context.operation('createBook').body(name: 'Howdy').execute
       assert_equal 1, result.id
       assert_equal 'Howdy', result.name
+    end
+
+    test 'executes a POST request without a body' do
+      stub_request(:post, 'http://example.com/v1/books').and_return(body: '{"id":1,"name":"Howdy"}')
+      result = @context.operation('createBook').execute
+      assert_equal 1, result.id
+      assert_equal 'Howdy', result.name
+    end
+
+    test 'executes a PUT request with a body' do
+      stub_request(:put, 'http://example.com/v1/books/56').and_return(body: '{"id":1,"name":"Howdy"}')
+      result = @context.operation('updateBook').params(id: 56).body(name: 'Howdy').execute
+      assert_equal 1, result.id
+      assert_equal 'Howdy', result.name
+    end
+
+    test 'executes a PUT request without a body' do
+      stub_request(:put, 'http://example.com/v1/books/83').and_return(body: '{"id":1,"name":"Howdy"}')
+      result = @context.operation('updateBook').params(id: 83).execute
+      assert_equal 1, result.id
+      assert_equal 'Howdy', result.name
+    end
+
+    test 'executes a PATCH request with a body' do
+      stub_request(:patch, 'http://example.com/v1/books/12').and_return(body: '{"id":1,"name":"Howdy"}')
+      result = @context.operation('updateBook2').params(id: 12).body(name: 'Howdy').execute
+      assert_equal 1, result.id
+      assert_equal 'Howdy', result.name
+    end
+
+    test 'executes a PATCH request without a body' do
+      stub_request(:patch, 'http://example.com/v1/books/93').and_return(body: '{"id":1,"name":"Howdy"}')
+      result = @context.operation('updateBook2').params(id: 93).execute
+      assert_equal 1, result.id
+      assert_equal 'Howdy', result.name
+    end
+
+    test 'executes a DELETE request with a body' do
+      stub_request(:delete, 'http://example.com/v1/books/29').and_return(status: 204)
+      assert_nil @context.operation('deleteBook').params(id: 29).execute
     end
   end
 

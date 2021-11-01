@@ -26,6 +26,12 @@ class Reynard
           build_http_get
         when 'post'
           build_http_post
+        when 'put'
+          build_http_put
+        when 'patch'
+          build_http_patch
+        when 'delete'
+          build_http_delete
         end
       end
 
@@ -37,6 +43,22 @@ class Reynard
         post = Net::HTTP::Post.new(uri, @request_context.headers)
         post.body = @request_context.body
         post
+      end
+
+      def build_http_put
+        put = Net::HTTP::Put.new(uri, @request_context.headers)
+        put.body = @request_context.body
+        put
+      end
+
+      def build_http_patch
+        patch = Net::HTTP::Patch.new(uri, @request_context.headers)
+        patch.body = @request_context.body
+        patch
+      end
+
+      def build_http_delete
+        Net::HTTP::Delete.new(uri, @request_context.headers)
       end
     end
   end
