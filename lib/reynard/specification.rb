@@ -92,7 +92,7 @@ class Reynard
 
     def read
       File.open(@filename, encoding: 'UTF-8') do |file|
-        YAML.safe_load(file)
+        YAML.safe_load(file, aliases: true)
       end
     end
 
