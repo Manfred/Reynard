@@ -34,6 +34,14 @@ class Reynard
     @specification = Specification.new(filename: filename)
   end
 
+  # Assign an object that follows Reynard's internal request interface to mock requests or use a
+  # different HTTP client.
+  class << self
+    attr_writer :http
+  end
+
+  # Returns Reynard's global request interface. This is a global object to allow persistent
+  # connections, caching, and other features that need a persistent object in the process.
   def self.http
     @http ||= begin
       http = Net::HTTP::Persistent.new(name: 'Reynard')
