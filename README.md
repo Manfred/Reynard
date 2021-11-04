@@ -66,6 +66,20 @@ employee = reynard.
   execute
 ```
 
+## Mocking
+
+You can mock Reynard requests by changing the HTTP implementation. The class **must** implement a single `request` method that accepts an URI and net/http request object. It **must** return a net/http response object or an object with the exact same interface.
+
+```ruby
+Reynard.http = MyMock.new
+
+class MyMock
+  def request(uri, net_http_request)
+    Net::HTTPResponse::CODE_TO_OBJ['404'].new('HTTP/1.1', '200', 'OK')
+  end
+end
+```
+
 ## Copyright and other legal
 
 See LICENCE.
