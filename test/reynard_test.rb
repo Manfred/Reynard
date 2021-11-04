@@ -61,4 +61,25 @@ class ReynardTest < Reynard::Test
       assert_equal value, record.send(name)
     end
   end
+
+  class Mock
+    def request(_uri, _request)
+      response = Net::HTTPResponse::CODE_TO_OBJ['404'].new('HTTP/1.1', '400', 'Not Found')
+      response.instance_variable_set('@read', true)
+      response.instance_variable_set('@body', '{"code":404,"message":"Not Found"}')
+      response
+    end
+  end
+
+  test 'performs a request with a different HTTP implementation' do
+    before = Reynard.http
+    Reynard.http = Mock.new
+    context = Reynard
+              .new(filename: fixture_file('openapi/simple.yml'))
+              .operation('fetchBook')
+              .params(id: 42)
+    assert_equal 'Not Found', context.execute.message
+  ensure
+    Reynard.http = before
+  end
 end
