@@ -40,7 +40,7 @@ reynard.base_url('http://test.example.com/v1')
 You also have access to all servers in the specification so you can automatically select one however you want.
 
 ```ruby
-base_url = @reynard.servers.map(&:url).find do |url|
+base_url = reynard.servers.map(&:url).find do |url|
   /staging/.match(url)
 end
 reynard.base_url(base_url)
