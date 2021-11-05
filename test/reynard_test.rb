@@ -62,6 +62,22 @@ class ReynardTest < Reynard::Test
     end
   end
 
+  test 'performs a request when a $ref to a schema has character encoding' do
+    apple = { placeholder: '✅' }
+    reynard = Reynard.new(filename: fixture_file('openapi/weird.yml'))
+    context = reynard
+              .operation('getApple')
+              .params(placeholder: '⸮')
+    stub_request(:get, "#{reynard.servers.first.url}#{context.full_path}")
+      .to_return(
+        body: MultiJson.dump(apple),
+        headers: {
+          'Content-Type' => 'application/json; charset=utf-8'
+        }
+      )
+    assert_equal apple[:placeholder], context.execute.placeholder
+  end
+
   class Mock
     def request(_uri, _request)
       response = Net::HTTPResponse::CODE_TO_OBJ['404'].new('HTTP/1.1', '400', 'Not Found')

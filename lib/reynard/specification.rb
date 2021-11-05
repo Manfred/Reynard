@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'rack'
+
 class Reynard
   # Wraps the YAML representation of an OpenAPI specification.
   class Specification
@@ -88,6 +90,15 @@ class Reynard
       false
     end
 
+    def self.normalize_model_name(name)
+      # 1. Unescape encoded characters to create an UTF-8 string
+      # 2. Replace all non-alphabetic characters with a space (not allowed in Ruby constant)
+      # 3. Camelcase
+      Rack::Utils.unescape_path(name)
+                 .gsub(/[^[:alpha:]]/, ' ')
+                 .gsub(/(\s+)([[:alpha:]])/) { Regexp.last_match(2).upcase }
+    end
+
     private
 
     def read
@@ -105,7 +116,7 @@ class Reynard
         next unless cursor.respond_to?(:key?) && cursor&.key?('$ref')
 
         # We currenly only supply references inside the document starting with #/.
-        path = cursor['$ref'][2..].split('/') + path
+        path = Rack::Utils.unescape_path(cursor['$ref'][2..]).split('/') + path
         cursor = data
       end
       cursor
@@ -113,16 +124,16 @@ class Reynard
 
     def schema_name(response)
       ref = response.dig('schema', '$ref')
-      ref&.split('/')&.last
+      return unless ref
+
+      self.class.normalize_model_name(ref&.split('/')&.last)
     end
 
     def item_schema_name(schema)
       ref = schema.dig('items', '$ref')
-      ref&.split('/')&.last
-    end
+      return unless ref
 
-    def object_name(_schema)
-      'Book'
+      self.class.normalize_model_name(ref&.split('/')&.last)
     end
   end
 end
