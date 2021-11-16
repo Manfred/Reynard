@@ -56,9 +56,12 @@ class ReynardTest < Reynard::Test
           'Content-Type' => 'application/json; charset=utf-8'
         }
       )
-    record = context.execute
+    response = context.execute
+    assert_equal '200', response.code
+    assert_equal 'application/json', response.content_type
+    object = response.object
     @book.each do |name, value|
-      assert_equal value, record.send(name)
+      assert_equal value, object.send(name)
     end
   end
 
@@ -75,7 +78,10 @@ class ReynardTest < Reynard::Test
           'Content-Type' => 'application/json; charset=utf-8'
         }
       )
-    assert_equal apple[:placeholder], context.execute.placeholder
+    response = context.execute
+    assert_equal '200', response.code
+    object = response.object
+    assert_equal apple[:placeholder], object.placeholder
   end
 
   class Mock
@@ -94,7 +100,7 @@ class ReynardTest < Reynard::Test
               .new(filename: fixture_file('openapi/simple.yml'))
               .operation('fetchBook')
               .params(id: 42)
-    assert_equal 'Not Found', context.execute.message
+    assert_equal 'Not Found', context.execute.object.message
   ensure
     Reynard.http = before
   end

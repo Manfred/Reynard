@@ -20,14 +20,18 @@ module Integration
 
     test 'fetches a collection' do
       with_simple_service do
-        books = @reynard.operation('listBooks').execute
+        response = @reynard.operation('listBooks').execute
+        assert_equal '200', response.code
+        books = response.object
         assert_kind_of Reynard::Models::Books, books
       end
     end
 
     test 'fetches an object' do
       with_simple_service do
-        book = @reynard.operation('fetchBook').params(id: 1).execute
+        response = @reynard.operation('fetchBook').params(id: 1).execute
+        assert_equal '200', response.code
+        book = response.object
         assert_kind_of Reynard::Models::Book, book
       end
     end
@@ -35,7 +39,9 @@ module Integration
     test 'creates an object' do
       with_simple_service do
         name = 'An unexpected occurance'
-        book = @reynard.operation('createBook').body({ 'name' => name }).execute
+        response = @reynard.operation('createBook').body({ 'name' => name }).execute
+        assert_equal '200', response.code
+        book = response.object
         assert_kind_of Reynard::Models::Book, book
         assert_equal name, book.name
       end
@@ -43,7 +49,9 @@ module Integration
 
     test 'returns an error when fetching an object fails' do
       with_simple_service do
-        error = @reynard.operation('fetchBook').params(id: -1).execute
+        response = @reynard.operation('fetchBook').params(id: -1).execute
+        assert_equal '404', response.code
+        error = response.object
         assert_kind_of Reynard::Models::Error, error
         assert_equal 'not_found', error.error
       end
@@ -54,7 +62,8 @@ module Integration
         threads = []
         3.times do
           threads << Thread.new do
-            assert_equal 1, @reynard.operation('fetchBook').params(id: 1).execute.id
+            response = @reynard.operation('fetchBook').params(id: 1).execute
+            assert_equal 1, response.object.id
           end
         end
         threads.map(&:join)
