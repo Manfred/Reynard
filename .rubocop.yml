@@ -14,7 +14,9 @@ Metrics/MethodLength:
     - test/**/*_test.rb
 Style/AsciiComments:
   Enabled: false
-# The Specification class defines its own dig method and that must work with
-# a single argument.
+# We use OpenStruct exactly what it was created for; objects with schema on read.
+Style/OpenStructUse:
+  Enabled: false
+# The Specification class defines its own dig method and that must work with a single argument.
 Style/SingleArgumentDig:
   Enabled: false
