@@ -51,7 +51,7 @@ reynard.base_url(base_url)
 Assuming there is an operation called `employeeByUuid` you can it as shown below.
 
 ```ruby
-employee = reynard.
+response = reynard.
   operation('employeeByUuid').
   params(uuid: uuid).
   execute
@@ -60,10 +60,25 @@ employee = reynard.
 When an operation requires a body, you can add it as structured data.
 
 ```ruby
-employee = reynard.
+response = reynard.
   operation('createEmployee').
   body(name: 'Sam Seven').
   execute
+```
+
+In case the response matches a response in the specification it will attempt to build an object using the specified schema.
+
+```ruby
+response.object.name #=> 'Sam Seven'
+```
+
+The response object shared much of its interface with `Net::HTTP::Response`.
+
+```ruby
+response.code #=> '200'
+response.content_type #=> 'application/json'
+response['Content-Type'] #=> 'application/json'
+response.body #=> '{"name":"Sam Seven"}'
 ```
 
 ## Mocking
