@@ -43,7 +43,7 @@ class Reynard
     end
 
     def execute
-      build_object(build_request.perform)
+      build_response(build_request.perform)
     end
 
     private
@@ -63,32 +63,12 @@ class Reynard
       Reynard::Http::Request.new(request_context: @request_context)
     end
 
-    def build_object(http_response)
-      media_type = @specification.media_type(
-        @request_context.operation.node,
-        http_response.code,
-        http_response.content_type
-      )
-      if media_type
-        build_object_with_media_type(http_response, media_type)
-      else
-        build_object_without_media_type(http_response)
-      end
-    end
-
-    def build_object_with_media_type(http_response, media_type)
-      ObjectBuilder.new(
-        media_type: media_type,
-        schema: @specification.schema(media_type.node),
+    def build_response(http_response)
+      Reynard::Http::Response.new(
+        specification: @specification,
+        request_context: @request_context,
         http_response: http_response
-      ).call
-    end
-
-    def build_object_without_media_type(http_response)
-      # Try to parse the response as JSON and give up otherwise.
-      OpenStruct.new(MultiJson.load(http_response.body))
-    rescue StandardError
-      http_response.body
+      )
     end
   end
 end

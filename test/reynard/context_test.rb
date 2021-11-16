@@ -73,71 +73,82 @@ class Reynard
       stub_request(:get, 'http://example.com/v1/books').and_return(
         body: '[{"id":1},{"id":2},{"id":3}]'
       )
-      result = @context.operation('listBooks').execute
-      assert_equal [1, 2, 3], result.map(&:id)
+      response = @context.operation('listBooks').execute
+      assert_equal '200', response.code
+      assert_equal [1, 2, 3], response.object.map(&:id)
     end
 
     test 'executes a request for a single resource' do
       stub_request(:get, 'http://example.com/v1/books/1').and_return(body: '{"id":1}')
-      result = @context.operation('fetchBook').params(id: 1).execute
-      assert_equal 1, result.id
+      response = @context.operation('fetchBook').params(id: 1).execute
+      assert_equal '200', response.code
+      assert_equal 1, response.object.id
     end
 
     test 'executes a request for a single resource with a specific content-type' do
       stub_request(:get, 'http://example.com/v1/books/1').and_return(body: '{"id":1}')
-      result = @context
-               .operation('fetchBook')
-               .headers('Accept' => 'application/json')
-               .params(id: 1)
-               .execute
-      assert_equal 1, result.id
+      response = @context
+                 .operation('fetchBook')
+                 .headers('Accept' => 'application/json')
+                 .params(id: 1)
+                 .execute
+      assert_equal '200', response.code
+      assert_equal 1, response.object.id
     end
 
     test 'executes a POST request with a body' do
       stub_request(:post, 'http://example.com/v1/books').and_return(body: '{"id":1,"name":"Howdy"}')
-      result = @context.operation('createBook').body(name: 'Howdy').execute
-      assert_equal 1, result.id
-      assert_equal 'Howdy', result.name
+      response = @context.operation('createBook').body(name: 'Howdy').execute
+      assert_equal '200', response.code
+      assert_equal 1, response.object.id
+      assert_equal 'Howdy', response.object.name
     end
 
     test 'executes a POST request without a body' do
       stub_request(:post, 'http://example.com/v1/books').and_return(body: '{"id":1,"name":"Howdy"}')
-      result = @context.operation('createBook').execute
-      assert_equal 1, result.id
-      assert_equal 'Howdy', result.name
+      response = @context.operation('createBook').execute
+      assert_equal '200', response.code
+      assert_equal 1, response.object.id
+      assert_equal 'Howdy', response.object.name
     end
 
     test 'executes a PUT request with a body' do
       stub_request(:put, 'http://example.com/v1/books/56').and_return(body: '{"id":1,"name":"Howdy"}')
-      result = @context.operation('updateBook').params(id: 56).body(name: 'Howdy').execute
-      assert_equal 1, result.id
-      assert_equal 'Howdy', result.name
+      response = @context.operation('updateBook').params(id: 56).body(name: 'Howdy').execute
+      assert_equal '200', response.code
+      assert_equal 1, response.object.id
+      assert_equal 'Howdy', response.object.name
     end
 
     test 'executes a PUT request without a body' do
       stub_request(:put, 'http://example.com/v1/books/83').and_return(body: '{"id":1,"name":"Howdy"}')
-      result = @context.operation('updateBook').params(id: 83).execute
-      assert_equal 1, result.id
-      assert_equal 'Howdy', result.name
+      response = @context.operation('updateBook').params(id: 83).execute
+      assert_equal '200', response.code
+      assert_equal 1, response.object.id
+      assert_equal 'Howdy', response.object.name
     end
 
     test 'executes a PATCH request with a body' do
       stub_request(:patch, 'http://example.com/v1/books/12').and_return(body: '{"id":1,"name":"Howdy"}')
-      result = @context.operation('updateBook2').params(id: 12).body(name: 'Howdy').execute
-      assert_equal 1, result.id
-      assert_equal 'Howdy', result.name
+      response = @context.operation('updateBook2').params(id: 12).body(name: 'Howdy').execute
+      assert_equal '200', response.code
+      assert_equal 1, response.object.id
+      assert_equal 'Howdy', response.object.name
     end
 
     test 'executes a PATCH request without a body' do
       stub_request(:patch, 'http://example.com/v1/books/93').and_return(body: '{"id":1,"name":"Howdy"}')
-      result = @context.operation('updateBook2').params(id: 93).execute
-      assert_equal 1, result.id
-      assert_equal 'Howdy', result.name
+      response = @context.operation('updateBook2').params(id: 93).execute
+      assert_equal '200', response.code
+      assert_equal 1, response.object.id
+      assert_equal 'Howdy', response.object.name
     end
 
     test 'executes a DELETE request with a body' do
       stub_request(:delete, 'http://example.com/v1/books/29').and_return(status: 204)
-      assert_nil @context.operation('deleteBook').params(id: 29).execute
+      response = @context.operation('deleteBook').params(id: 29).execute
+      assert_equal '204', response.code
+      assert_nil response.object
     end
   end
 
@@ -152,9 +163,9 @@ class Reynard
       stub_request(:get, 'http://example.com/clowns').and_return(
         status: 500, body: '{"message":"Howdy"}'
       )
-      result = @context.operation('listClowns').execute
-      assert_kind_of OpenStruct, result
-      assert_equal 'Howdy', result.message
+      response = @context.operation('listClowns').execute
+      assert_kind_of OpenStruct, response.object
+      assert_equal 'Howdy', response.object.message
     end
   end
 end
