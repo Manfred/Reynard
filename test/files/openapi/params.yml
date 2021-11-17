@@ -1,0 +1,56 @@
+openapi: "3.0.3"
+info:
+  title: Complex parameters
+  version: 1.0.0
+  contact: {}
+  description: Show support for complex parameters.
+servers:
+  - url: https://example.com
+tags:
+  - name: parameters
+    description: Complex parameters
+paths:
+  /spaces/{name}:
+    parameters:
+      - in: path
+        name: name
+        required: true
+        schema:
+          type: string
+          enum:
+            - yellow
+            - green
+            - red
+          default: red
+      - in: query
+        name: filter
+        schema:
+          type: string
+    get:
+      summary: Get color space
+      description: Get details about a color space.
+      operationId: getSpace
+      tags:
+        - parameters
+      responses:
+        '200':
+          description: A color space.
+    patch:
+      summary: Update color space
+      description: Update details about a color space.
+      operationId: updateSpace
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+            enum:
+              - blue
+              - green
+              - black
+      tags:
+        - parameters
+      responses:
+        '200':
+          description: A color space.
