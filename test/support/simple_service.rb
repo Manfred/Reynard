@@ -7,6 +7,8 @@ require 'multi_json'
 require 'webrick'
 
 class SimpleService
+  Options = Struct.new(:port, keyword_init: true)
+
   class Servlet < WEBrick::HTTPServlet::AbstractServlet
     def initialize(*)
       super
@@ -84,7 +86,7 @@ class SimpleService
   end
 
   def self.options
-    @options ||= OpenStruct.new(port: 8592)
+    @options ||= Options.new(port: 8592)
   end
 
   def self.run

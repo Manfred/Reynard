@@ -4,6 +4,8 @@ require_relative '../test_helper'
 
 class Reynard
   class ObjectBuilderTest < Reynard::Test
+    Response = Struct.new(:body, keyword_init: true)
+
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
     end
@@ -15,7 +17,7 @@ class Reynard
       collection = Reynard::ObjectBuilder.new(
         media_type: media_type,
         schema: schema,
-        http_response: OpenStruct.new(body: '[{"id":42,"name":"Black Science"}]')
+        http_response: Response.new(body: '[{"id":42,"name":"Black Science"}]')
       ).call
       assert_kind_of(Reynard::ObjectBuilder.model_class('Books', 'array'), collection)
 
@@ -32,7 +34,7 @@ class Reynard
       record = Reynard::ObjectBuilder.new(
         media_type: media_type,
         schema: schema,
-        http_response: OpenStruct.new(body: '{"id":42,"name":"Black Science"}')
+        http_response: Response.new(body: '{"id":42,"name":"Black Science"}')
       ).call
       assert_kind_of(Reynard::ObjectBuilder.model_class('Book', 'object'), record)
       assert_equal 42, record.id

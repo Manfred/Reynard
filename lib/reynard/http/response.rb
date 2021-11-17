@@ -46,7 +46,7 @@ class Reynard
 
       def build_object_without_media_type
         # Try to parse the response as JSON and give up otherwise.
-        OpenStruct.new(MultiJson.load(@http_response.body))
+        Reynard::Model.new(MultiJson.load(@http_response.body))
       rescue StandardError
         @http_response.body
       end
