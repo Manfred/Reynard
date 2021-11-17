@@ -164,7 +164,7 @@ class Reynard
         status: 500, body: '{"message":"Howdy"}'
       )
       response = @context.operation('listClowns').execute
-      assert_kind_of OpenStruct, response.object
+      assert_kind_of Reynard::Model, response.object
       assert_equal 'Howdy', response.object.message
     end
   end
