@@ -5,6 +5,8 @@ require 'rack'
 class Reynard
   # Wraps the YAML representation of an OpenAPI specification.
   class Specification
+    VERBS = %w[get put post delete options head patch trace].freeze
+
     def initialize(filename:)
       @filename = filename
       @data = read
@@ -32,7 +34,15 @@ class Reynard
     def build_grouped_params(operation_node, params)
       return {} unless params
 
-      GroupedParameters.new(dig(*operation_node, 'parameters'), params).to_h
+      GroupedParameters.new(
+        [
+          # Parameters can be shared between methods on a path or be specific to an operation. The
+          # parameters on the operation level override those at the path level.
+          dig(*operation_node, 'parameters'),
+          dig(*operation_node[..-2], 'parameters')
+        ].compact.flatten,
+        params
+      ).to_h
     end
 
     # Returns a serialized body instance to serialize a request body and figure out the request
@@ -43,7 +53,7 @@ class Reynard
 
     def operation(operation_name)
       dig('paths').each do |path, operations|
-        operations.each do |verb, operation|
+        operations.slice(*VERBS).each do |verb, operation|
           return Operation.new(node: ['paths', path, verb]) if operation_name == operation['operationId']
         end
       end

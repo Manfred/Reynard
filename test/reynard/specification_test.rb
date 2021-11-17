@@ -179,6 +179,30 @@ class Reynard
     end
   end
 
+  class ParametersSpecificationTest < Reynard::Test
+    def setup
+      @specification = Specification.new(filename: fixture_file('openapi/params.yml'))
+    end
+
+    test 'applies a parameter specification at the path level' do
+      operation = @specification.operation('getSpace')
+      params = { 'name' => 'yellow', 'filter' => 'rgb' }
+      assert_equal(
+        { 'path' => { 'name' => 'yellow' }, 'query' => { 'filter' => 'rgb' } },
+        @specification.build_grouped_params(operation.node, params)
+      )
+    end
+
+    test 'applies a parameter specification at the path level overriden at operation level' do
+      operation = @specification.operation('updateSpace')
+      params = { 'name' => 'yellow', 'filter' => 'rgb' }
+      assert_equal(
+        { 'path' => { 'name' => 'yellow' }, 'query' => { 'filter' => 'rgb' } },
+        @specification.build_grouped_params(operation.node, params)
+      )
+    end
+  end
+
   class BareSpecificationTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/bare.yml'))
