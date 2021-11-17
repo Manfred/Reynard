@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    reynard (0.2.0)
+    reynard (0.3.0)
       multi_json
       net-http-persistent
       rack
