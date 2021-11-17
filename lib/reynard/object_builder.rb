@@ -15,7 +15,7 @@ class Reynard
       if @media_type.schema_name
         self.class.model_class(@media_type.schema_name, @schema.object_type)
       else
-        OpenStruct
+        Reynard::Model
       end
     end
 
@@ -23,7 +23,7 @@ class Reynard
       if @schema.item_schema_name
         self.class.model_class(@schema.item_schema_name, 'object')
       else
-        OpenStruct
+        Reynard::Model
       end
     end
 
