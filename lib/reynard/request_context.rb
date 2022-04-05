@@ -3,6 +3,7 @@
 class Reynard
   # Value class for details about the request.
   RequestContext = Struct.new(
+    :logger,
     :base_url,
     :operation,
     :headers,
@@ -10,14 +11,6 @@ class Reynard
     :body,
     keyword_init: true
   ) do
-    attr_writer :logger
-
-    def logger
-      @logger = nil unless defined?(@logger)
-
-      Reynard::Logger.new(@logger)
-    end
-
     def verb
       operation&.verb
     end
