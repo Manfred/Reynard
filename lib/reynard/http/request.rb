@@ -15,50 +15,23 @@ class Reynard
       end
 
       def perform
+        @request_context.logger.info { "#{@request_context.verb.upcase} #{uri}" }
         Reynard.http.request(uri, build_request)
       end
 
       private
 
+      def request_class
+        Net::HTTP.const_get(@request_context.verb.capitalize)
+      end
+
       def build_request
-        case @request_context.verb
-        when 'get'
-          build_http_get
-        when 'post'
-          build_http_post
-        when 'put'
-          build_http_put
-        when 'patch'
-          build_http_patch
-        when 'delete'
-          build_http_delete
+        request = request_class.new(uri, @request_context.headers)
+        if @request_context.body
+          @request_context.logger.debug { @request_context.body }
+          request.body = @request_context.body
         end
-      end
-
-      def build_http_get
-        Net::HTTP::Get.new(uri, @request_context.headers)
-      end
-
-      def build_http_post
-        post = Net::HTTP::Post.new(uri, @request_context.headers)
-        post.body = @request_context.body
-        post
-      end
-
-      def build_http_put
-        put = Net::HTTP::Put.new(uri, @request_context.headers)
-        put.body = @request_context.body
-        put
-      end
-
-      def build_http_patch
-        patch = Net::HTTP::Patch.new(uri, @request_context.headers)
-        patch.body = @request_context.body
-        patch
-      end
-
-      def build_http_delete
-        Net::HTTP::Delete.new(uri, @request_context.headers)
+        request
       end
     end
   end
