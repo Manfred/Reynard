@@ -150,6 +150,29 @@ class Reynard
       assert_equal '204', response.code
       assert_nil response.object
     end
+
+    test 'logs request details when a logger at debug level is assigned' do
+      out = StringIO.new
+      logger = ::Logger.new(out)
+      logger.level = ::Logger::DEBUG
+      stub_request(:post, 'http://example.com/v1/books').and_return(body: '{"id":1,"name":"Howdy"}')
+      @context.logger(logger).operation('createBook').body({}).execute
+      lines = out.string.split("\n")
+      assert_equal 2, lines.length
+      assert lines[0].end_with?('INFO -- : POST http://example.com/v1/books')
+      assert lines[1].end_with?('DEBUG -- : {}')
+    end
+
+    test 'logs request details when a logger at info level is assigned' do
+      out = StringIO.new
+      logger = ::Logger.new(out)
+      logger.level = ::Logger::INFO
+      stub_request(:post, 'http://example.com/v1/books').and_return(body: '{"id":1,"name":"Howdy"}')
+      @context.logger(logger).operation('createBook').body({}).execute
+      lines = out.string.split("\n")
+      assert_equal 1, lines.length
+      assert lines[0].end_with?('INFO -- : POST http://example.com/v1/books')
+    end
   end
 
   class BareContextTest < Reynard::Test

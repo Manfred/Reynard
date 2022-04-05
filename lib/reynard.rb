@@ -17,6 +17,7 @@ class Reynard
   autoload :Context, 'reynard/context'
   autoload :GroupedParameters, 'reynard/grouped_parameters'
   autoload :Http, 'reynard/http'
+  autoload :Logger, 'reynard/logger'
   autoload :MediaType, 'reynard/media_type'
   autoload :Model, 'reynard/model'
   autoload :Models, 'reynard/models'
@@ -34,9 +35,9 @@ class Reynard
     @specification = Specification.new(filename: filename)
   end
 
-  # Assign an object that follows Reynard's internal request interface to mock requests or use a
-  # different HTTP client.
   class << self
+    # Assign an object that follows Reynard's internal request interface to mock requests or use a
+    # different HTTP client.
     attr_writer :http
   end
 

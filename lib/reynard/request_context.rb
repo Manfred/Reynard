@@ -10,6 +10,14 @@ class Reynard
     :body,
     keyword_init: true
   ) do
+    attr_writer :logger
+
+    def logger
+      @logger = nil unless defined?(@logger)
+
+      Reynard::Logger.new(@logger)
+    end
+
     def verb
       operation&.verb
     end

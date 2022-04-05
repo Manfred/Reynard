@@ -42,6 +42,10 @@ class Reynard
       copy(headers: @request_context.headers.merge(headers))
     end
 
+    def logger(logger)
+      copy(logger: logger)
+    end
+
     def execute
       build_response(build_request.perform)
     end
