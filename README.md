@@ -81,6 +81,22 @@ response['Content-Type'] #=> 'application/json'
 response.body #=> '{"name":"Sam Seven"}'
 ```
 
+## Logging
+
+When you want to know what the Reynard client is doing you can enable logging.
+
+```ruby
+logger = Logger.new($stdout)
+logger.level = Logger::INFO
+reynard.logger(logger).execute
+```
+
+The logging should be compatible with the Ruby on Rails logger.
+
+```ruby
+reynard.logger(Rails.logger).execute
+```
+
 ## Mocking
 
 You can mock Reynard requests by changing the HTTP implementation. The class **must** implement a single `request` method that accepts an URI and net/http request object. It **must** return a net/http response object or an object with the exact same interface.
