@@ -15,7 +15,7 @@ class Reynard
       end
 
       def perform
-        @request_context.logger.info { "#{@request_context.verb.upcase} #{uri}" }
+        @request_context.logger&.info { "#{@request_context.verb.upcase} #{uri}" }
         Reynard.http.request(uri, build_request)
       end
 
@@ -28,7 +28,7 @@ class Reynard
       def build_request
         request = request_class.new(uri, @request_context.headers)
         if @request_context.body
-          @request_context.logger.debug { @request_context.body }
+          @request_context.logger&.debug { @request_context.body }
           request.body = @request_context.body
         end
         request
