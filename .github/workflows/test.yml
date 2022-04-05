@@ -18,7 +18,6 @@ jobs:
       - name: Install Bundler and Rubocop
         run: |
           gem install --no-document bundler rubocop rubocop-performance
-          bundle config set deployment 'true'
           bundle config set path 'vendor/bundle'
           bundle install --jobs 3 --retry 3
       - name: Run tests
