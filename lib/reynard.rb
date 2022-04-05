@@ -17,6 +17,7 @@ class Reynard
   autoload :Context, 'reynard/context'
   autoload :GroupedParameters, 'reynard/grouped_parameters'
   autoload :Http, 'reynard/http'
+  autoload :Logger, 'reynard/logger'
   autoload :MediaType, 'reynard/media_type'
   autoload :Model, 'reynard/model'
   autoload :Models, 'reynard/models'
