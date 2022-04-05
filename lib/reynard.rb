@@ -34,9 +34,9 @@ class Reynard
     @specification = Specification.new(filename: filename)
   end
 
-  # Assign an object that follows Reynard's internal request interface to mock requests or use a
-  # different HTTP client.
   class << self
+    # Assign an object that follows Reynard's internal request interface to mock requests or use a
+    # different HTTP client.
     attr_writer :http
   end
 
