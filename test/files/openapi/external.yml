@@ -32,3 +32,9 @@ paths:
             application/json:
               schema:
                 $ref: './schemas/author.yml'
+        default:
+          description: An error.
+          content:
+            application/json:
+              schema:
+                $ref: "./simple.yml#/components/schemas/Error"

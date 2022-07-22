@@ -128,9 +128,17 @@ class Reynard
         path.shift
         next unless cursor.respond_to?(:key?) && cursor&.key?('$ref')
 
-        # We currenly only supply references inside the document starting with #/.
-        path = Rack::Utils.unescape_path(cursor['$ref'][2..]).split('/') + path
-        cursor = data
+        case cursor['$ref']
+        # References another element in the current specification.
+        when %r{\A#/}
+          path = Rack::Utils.unescape_path(cursor['$ref'][2..]).split('/') + path
+          cursor = data
+        # References another file, with an optional anchor to an element in the data.
+        when %r{\A\./}
+          external = External.new(path: File.dirname(@filename), ref: cursor['$ref'])
+          path = external.path + path
+          cursor = external.data
+        end
       end
       cursor
     end

@@ -226,4 +226,43 @@ class Reynard
       assert_nil @specification.media_type(operation.node, '500', nil)
     end
   end
+
+  class ExernalSpecificationTest < Reynard::Test
+    def setup
+      @specification = Specification.new(filename: fixture_file('openapi/external.yml'))
+    end
+
+    test 'digs into an external file' do
+      data = @specification.dig(
+        'paths', '/authors/{id}', 'get', 'responses', '200',
+        'content', 'application/json', 'schema'
+      )
+      assert_equal 'Author', data['title']
+    end
+
+    test 'digs into an external file through a reference' do
+      data = @specification.dig(
+        'paths', '/authors/{id}', 'get', 'responses', '200',
+        'content', 'application/json', 'schema',
+        'properties', 'id', 'type'
+      )
+      assert_equal 'integer', data
+    end
+
+    test 'digs into an external file with an anchor' do
+      data = @specification.dig(
+        'paths', '/authors/{id}', 'get', 'responses', 'default',
+        'content', 'application/json', 'schema'
+      )
+      assert_equal %w[code message], data['required']
+    end
+
+    test 'digs into an external file through a refenence with with an anchor' do
+      data = @specification.dig(
+        'paths', '/authors/{id}', 'get', 'responses', 'default',
+        'content', 'application/json', 'schema', 'required'
+      )
+      assert_equal %w[code message], data
+    end
+  end
 end
