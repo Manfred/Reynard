@@ -120,6 +120,9 @@ class Reynard
       end
     end
 
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/MethodLength
     def dig_into(data, cursor, path)
       while path.length.positive?
         cursor = cursor[path.first]
@@ -142,6 +145,9 @@ class Reynard
       end
       cursor
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/MethodLength
 
     def schema_name(response)
       ref = response.dig('schema', '$ref')
