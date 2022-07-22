@@ -1,0 +1,40 @@
+openapi: "3.0.0"
+info:
+  title: Library
+  version: 1.0.0
+  contact: {}
+  description: It authors!
+servers:
+  - url: http://example.com/v1
+  - url: http://staging.example.com/v1
+tags:
+  - name: authors
+    description: Author operations
+paths:
+  /authors/{id}:
+    get:
+      summary: Fetch author
+      description: Fetch all details for a author.
+      operationId: fetchAuthor
+      tags:
+        - authors
+      parameters:
+        - name: id
+          in: path
+          description: The numeric ID of the author.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A author.
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/author.yml'
+        default:
+          description: An error.
+          content:
+            application/json:
+              schema:
+                $ref: "./simple.yml#/components/schemas/Error"

@@ -102,11 +102,14 @@ class Reynard
 
     def self.normalize_model_name(name)
       # 1. Unescape encoded characters to create an UTF-8 string
-      # 2. Replace all non-alphabetic characters with a space (not allowed in Ruby constant)
-      # 3. Camelcase
+      # 2. Remove extensions for regularly used external schema files
+      # 3. Replace all non-alphabetic characters with a space (not allowed in Ruby constant)
+      # 4. Camelcase
       Rack::Utils.unescape_path(name)
+                 .gsub(/(.yml|.yaml|.json)\Z/, '')
                  .gsub(/[^[:alpha:]]/, ' ')
                  .gsub(/(\s+)([[:alpha:]])/) { Regexp.last_match(2).upcase }
+                 .gsub(/\A(.)/) { Regexp.last_match(1).upcase }
     end
 
     private
@@ -117,6 +120,9 @@ class Reynard
       end
     end
 
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/MethodLength
     def dig_into(data, cursor, path)
       while path.length.positive?
         cursor = cursor[path.first]
@@ -125,12 +131,23 @@ class Reynard
         path.shift
         next unless cursor.respond_to?(:key?) && cursor&.key?('$ref')
 
-        # We currenly only supply references inside the document starting with #/.
-        path = Rack::Utils.unescape_path(cursor['$ref'][2..]).split('/') + path
-        cursor = data
+        case cursor['$ref']
+        # References another element in the current specification.
+        when %r{\A#/}
+          path = Rack::Utils.unescape_path(cursor['$ref'][2..]).split('/') + path
+          cursor = data
+        # References another file, with an optional anchor to an element in the data.
+        when %r{\A\./}
+          external = External.new(path: File.dirname(@filename), ref: cursor['$ref'])
+          path = external.path + path
+          cursor = external.data
+        end
       end
       cursor
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/MethodLength
 
     def schema_name(response)
       ref = response.dig('schema', '$ref')

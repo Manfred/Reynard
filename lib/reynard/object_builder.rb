@@ -46,7 +46,7 @@ class Reynard
     end
 
     def self.model_class_get(name)
-      Reynard::Models.const_get(name)
+      Kernel.const_get("::Reynard::Models::#{name}")
     rescue NameError
       nil
     end

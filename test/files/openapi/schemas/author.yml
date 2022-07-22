@@ -1,0 +1,11 @@
+type: object
+title: Author
+description: >-
+  An author of a book.
+required: [id, name]
+properties:
+  id:
+    type: integer
+  name:
+    type: string
+additionalProperties: false

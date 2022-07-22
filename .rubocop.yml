@@ -4,6 +4,7 @@ AllCops:
 Layout/LineLength:
   Enabled: 100
 Metrics/ClassLength:
+  Enabled: 150
   Exclude:
     # Test classes are long.
     - test/**/*_test.rb
