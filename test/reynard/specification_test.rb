@@ -8,6 +8,19 @@ class Reynard
       @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
     end
 
+    test 'normalizes models names' do
+      examples = {
+        'Author' => 'Author',
+        'author.yml' => 'Author',
+        'general_error.json' => 'GeneralError',
+        'GeneralError' => 'GeneralError',
+        '%20howdy%E2%9A%A0%EF%B8%8F.Pardner' => 'HowdyPardner'
+      }
+      assert_equal(
+        examples.values, examples.keys.map { |example| Specification.normalize_model_name(example) }
+      )
+    end
+
     test 'initializes with an OpenAPI filename' do
       assert_equal 'Library', @specification.dig('info', 'title')
     end

@@ -102,11 +102,14 @@ class Reynard
 
     def self.normalize_model_name(name)
       # 1. Unescape encoded characters to create an UTF-8 string
-      # 2. Replace all non-alphabetic characters with a space (not allowed in Ruby constant)
-      # 3. Camelcase
+      # 2. Remove extensions for regularly used external schema files
+      # 3. Replace all non-alphabetic characters with a space (not allowed in Ruby constant)
+      # 4. Camelcase
       Rack::Utils.unescape_path(name)
+                 .gsub(/(.yml|.yaml|.json)\Z/, '')
                  .gsub(/[^[:alpha:]]/, ' ')
                  .gsub(/(\s+)([[:alpha:]])/) { Regexp.last_match(2).upcase }
+                 .gsub(/\A(.)/) { Regexp.last_match(1).upcase }
     end
 
     private
