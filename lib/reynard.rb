@@ -15,6 +15,7 @@ class Reynard
   def_delegators :@specification, :servers
 
   autoload :Context, 'reynard/context'
+  autoload :External, 'reynard/external'
   autoload :GroupedParameters, 'reynard/grouped_parameters'
   autoload :Http, 'reynard/http'
   autoload :Logger, 'reynard/logger'
