@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+if ARGV[0] == 'lint'
+  Dir.glob('**/*.{yml,yaml}') do |path|
+    File.open(path, 'r') do |file|
+      leading = file.read(64)
+      match = /^openapi:\s+"?([\d.]+)"?$/.match(leading)
+      next unless match
+
+      version = match[1]
+      puts "#{path} (#{version}):"
+      system("spectral lint #{path}")
+      puts
+      puts
+    end
+  end
+else
+  puts "Usage: #{$PROGRAM_NAME} lint"
+  puts '  Finds all YAML files with OpenAPI specs relative to the current path and'
+  puts ' lints them using spectral.'
+end
