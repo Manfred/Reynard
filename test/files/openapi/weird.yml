@@ -31,6 +31,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/%20howdy%E2%9A%A0%EF%B8%8F.Pardner"
+  /%2F:
+    patch:
+      summary: Root
+      description: Get root path
+      operationId: updateRoot
+      tags:
+        - complex
+      responses:
+        '200':
+          description: " it's not empty 🚕"
+          content:
+            application/json:
+              schema:
+                type: object
+                title: " A %2F root with 🚕 in the "
+                properties:
+                  name:
+                    type: string
 components:
   schemas:
     " howdy⚠️.Pardner":

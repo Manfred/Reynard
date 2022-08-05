@@ -1,0 +1,42 @@
+openapi: "3.0.3"
+info:
+  title: Library
+  version: 1.0.0
+  contact: {}
+  description: ISBN
+servers:
+  - url: http://example.com/v1
+tags:
+  - name: isbn
+    description: ISBN related operations
+paths:
+  /isbn:
+    get:
+      summary: Search for ISBNs
+      description: Returns a list of all books matching a title.
+      operationId: listISBN
+      tags:
+        - isbn
+      parameters:
+        - name: query
+          in: query
+          description: A query on the name of a book.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of ISBNs.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  title: ISBN
+                  description: Combination of an ISBN with the book's title for presentation.
+                  properties:
+                    isbn:
+                      type: string
+                    title:
+                      type: string

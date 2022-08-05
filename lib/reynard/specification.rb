@@ -112,6 +112,14 @@ class Reynard
                  .gsub(/\A(.)/) { Regexp.last_match(1).upcase }
     end
 
+    def self.normalize_model_title(title)
+      title
+        .gsub(/[^[:alpha:]]/, ' ')
+        .gsub(/\s{2,}/, ' ')
+        .gsub(/(\s+)([[:alpha:]])/) { Regexp.last_match(2).upcase }
+        .strip
+    end
+
     private
 
     def read
@@ -150,17 +158,25 @@ class Reynard
     # rubocop:enable Metrics/MethodLength
 
     def schema_name(response)
-      ref = response.dig('schema', '$ref')
-      return unless ref
-
-      self.class.normalize_model_name(ref&.split('/')&.last)
+      extract_schema_name(response['schema'])
     end
 
     def item_schema_name(schema)
-      ref = schema.dig('items', '$ref')
-      return unless ref
+      if schema['type'] == 'array'
+        extract_schema_name(schema['items'])
+      else
+        extract_schema_name(schema)
+      end
+    end
 
-      self.class.normalize_model_name(ref&.split('/')&.last)
+    def extract_schema_name(definition)
+      ref = definition['$ref']
+      return self.class.normalize_model_name(ref&.split('/')&.last) if ref
+
+      title = definition['title']
+      return unless title
+
+      self.class.normalize_model_title(title)
     end
   end
 end
