@@ -14,6 +14,8 @@ class Reynard
     def object_class
       if @media_type.schema_name
         self.class.model_class(@media_type.schema_name, @schema.object_type)
+      elsif @schema.object_type == 'array'
+        Array
       else
         Reynard::Model
       end
