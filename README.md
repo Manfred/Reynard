@@ -97,6 +97,16 @@ The logging should be compatible with the Ruby on Rails logger.
 reynard.logger(Rails.logger).execute
 ```
 
+## Debugging
+
+You can turn on debug logging in `Net::HTTP` by setting the `DEBUG` environment variable. After setting this, all HTTP interaction will be written to STDERR.
+
+```sh
+env DEBUG=true ruby script.rb
+```
+
+Internally this will set `http.debug_output = $stderr` on the HTTP object in the client.
+
 ## Mocking
 
 You can mock Reynard requests by changing the HTTP implementation. The class **must** implement a single `request` method that accepts an URI and net/http request object. It **must** return a net/http response object or an object with the exact same interface.
