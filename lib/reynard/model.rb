@@ -21,7 +21,7 @@ class Reynard
     end
 
     def respond_to_missing?(attribute_name, *)
-      !instance_variable_get("@#{attribute_name}").nil?
+      instance_variable_defined?("@#{attribute_name}")
     rescue NameError
       false
     end
