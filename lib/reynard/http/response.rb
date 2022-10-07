@@ -14,6 +14,31 @@ class Reynard
         @http_response = http_response
       end
 
+      # True when the response code is in the 1xx range.
+      def informational?
+        code.start_with?('1')
+      end
+
+      # True when the response code is in the 2xx range.
+      def success?
+        code.start_with?('2')
+      end
+
+      # True when the response code is in the 3xx range.
+      def redirection?
+        code.start_with?('3')
+      end
+
+      # True when the response code is in the 4xx range.
+      def client_error?
+        code.start_with?('4')
+      end
+
+      # True when the response code is in the 5xx range.
+      def server_error?
+        code.start_with?('5')
+      end
+
       # Instantiates an object based on the schema that fits the response.
       def object
         return @object if defined?(@object)
