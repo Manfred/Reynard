@@ -15,8 +15,8 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       collection = Reynard::ObjectBuilder.new(
-        media_type: media_type,
-        schema: schema,
+        media_type:,
+        schema:,
         http_response: Response.new(
           body: '[{"id":42,"name":"Black Science"},{"id":51,"name":"Dead Astronauts"}]'
         )
@@ -41,8 +41,8 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       record = Reynard::ObjectBuilder.new(
-        media_type: media_type,
-        schema: schema,
+        media_type:,
+        schema:,
         http_response: Response.new(body: '{"id":42,"name":"Black Science"}')
       ).call
       assert_kind_of(Reynard::ObjectBuilder.model_class('Book', 'object'), record)
@@ -63,8 +63,8 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       record = Reynard::ObjectBuilder.new(
-        media_type: media_type,
-        schema: schema,
+        media_type:,
+        schema:,
         http_response: Response.new(body: '{"id":42,"name":"Jerry Writer"}')
       ).call
       assert_kind_of(Reynard::ObjectBuilder.model_class('Author', 'object'), record)
@@ -85,8 +85,8 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       collection = Reynard::ObjectBuilder.new(
-        media_type: media_type,
-        schema: schema,
+        media_type:,
+        schema:,
         http_response: Response.new(
           body: '[{"isbn":"9781534307407","title":"Black Science Premiere Hardcover Volume 1 Remastered Edition (Black Science Omnibus, 1)"}]'
         )
@@ -115,8 +115,8 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       record = Reynard::ObjectBuilder.new(
-        media_type: media_type,
-        schema: schema,
+        media_type:,
+        schema:,
         http_response: Response.new(body: '{"name":"😇"}')
       ).call
       assert_kind_of(Reynard::ObjectBuilder.model_class('AFRootWithInThe', 'object'), record)
