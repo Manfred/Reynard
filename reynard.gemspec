@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   ]
   spec.require_paths = ['lib']
 
-  spec.required_ruby_version = '> 2.7'
+  spec.required_ruby_version = '> 3.1'
 
   spec.add_dependency 'multi_json'
   spec.add_dependency 'net-http-persistent'
