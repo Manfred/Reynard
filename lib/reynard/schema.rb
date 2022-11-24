@@ -36,7 +36,7 @@ class Reynard
 
     # Returns the schema for a propery in the schema.
     def property_schema(name)
-      property_node = [*node, 'properties', name]
+      property_node = [*node, 'properties', name.to_s]
       return unless @specification.dig(*property_node)
 
       self.class.new(
