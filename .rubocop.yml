@@ -3,6 +3,11 @@ AllCops:
   TargetRubyVersion: 3.1
 Layout/LineLength:
   Enabled: 100
+Metrics/BlockLength:
+  Exclude:
+    # Test blocks are long.
+    - test/**/*_test.rb
+    - reynard.gemspec
 Metrics/ClassLength:
   Enabled: 150
   Exclude:
