@@ -39,6 +39,13 @@ class Reynard
         code.start_with?('5')
       end
 
+      # Returns the parsed response body.
+      def parsed_body
+        return @parsed_body if defined?(@parsed_body)
+
+        @parsed_body = MultiJson.load(@http_response.body)
+      end
+
       # Instantiates an object based on the schema that fits the response.
       def object
         return @object if defined?(@object)
@@ -62,10 +69,9 @@ class Reynard
       end
 
       def build_object_with_media_type(media_type)
-        ObjectBuilder.new(
-          media_type:,
+        ::Reynard::ObjectBuilder.new(
           schema: @specification.schema(media_type.node),
-          http_response: @http_response
+          parsed_body:
         ).call
       end
 

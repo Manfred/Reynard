@@ -8,19 +8,6 @@ class Reynard
       @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
     end
 
-    test 'normalizes models names' do
-      examples = {
-        'Author' => 'Author',
-        'author.yml' => 'Author',
-        'general_error.json' => 'GeneralError',
-        'GeneralError' => 'GeneralError',
-        '%20howdy%E2%9A%A0%EF%B8%8F.Pardner' => 'HowdyPardner'
-      }
-      assert_equal(
-        examples.values, examples.keys.map { |example| Specification.normalize_model_name(example) }
-      )
-    end
-
     test 'initializes with an OpenAPI filename' do
       assert_equal 'Library', @specification.dig('info', 'title')
     end
@@ -118,8 +105,6 @@ class Reynard
       operation = @specification.operation('listBooks')
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       assert_equal(%w[paths /books get responses 200 content application/json], media_type.node)
-      assert_equal('200', media_type.response_code)
-      assert_equal('application/json', media_type.media_type)
 
       operation = @specification.operation('searchBooks')
       media_type = @specification.media_type(operation.node, '200', 'application/json')
@@ -127,8 +112,6 @@ class Reynard
         %w[paths /search/books get responses 200 content application/json],
         media_type.node
       )
-      assert_equal('200', media_type.response_code)
-      assert_equal('application/json', media_type.media_type)
     end
 
     test 'finds the default media type for unknown response code' do
@@ -138,8 +121,6 @@ class Reynard
         %w[paths /books get responses default content application/json],
         media_type.node
       )
-      assert_equal('default', media_type.response_code)
-      assert_equal('application/json', media_type.media_type)
     end
 
     test 'does not find media type for unknown media type' do
@@ -155,8 +136,9 @@ class Reynard
         %w[paths /books get responses 200 content application/json schema],
         schema.node
       )
-      assert_equal('array', schema.object_type)
-      assert_equal('Book', schema.item_schema_name)
+      assert_equal('array', schema.type)
+      assert_equal('Books', schema.model_name)
+      assert_equal('Book', schema.item_schema.model_name)
 
       operation = @specification.operation('fetchBook')
       media_type = @specification.media_type(operation.node, '200', 'application/json')
@@ -165,8 +147,9 @@ class Reynard
         %w[paths /books/{id} get responses 200 content application/json schema],
         schema.node
       )
-      assert_equal('object', schema.object_type)
-      assert_nil schema.item_schema_name
+      assert_equal('object', schema.type)
+      assert_equal('Book', schema.model_name)
+      assert_nil schema.item_schema
     end
 
     test 'uses first response when HTTP response does not have a media type' do
@@ -177,8 +160,9 @@ class Reynard
         %w[paths /books get responses 200 content application/json schema],
         schema.node
       )
-      assert_equal('array', schema.object_type)
-      assert_equal('Book', schema.item_schema_name)
+      assert_equal('array', schema.type)
+      assert_equal('Books', schema.model_name)
+      assert_equal('Book', schema.item_schema.model_name)
 
       operation = @specification.operation('fetchBook')
       media_type = @specification.media_type(operation.node, '200', 'application/json')
@@ -187,8 +171,9 @@ class Reynard
         %w[paths /books/{id} get responses 200 content application/json schema],
         schema.node
       )
-      assert_equal('object', schema.object_type)
-      assert_nil schema.item_schema_name
+      assert_equal('object', schema.type)
+      assert_equal('Book', schema.model_name)
+      assert_nil schema.item_schema
     end
   end
 

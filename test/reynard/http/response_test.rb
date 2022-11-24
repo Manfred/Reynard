@@ -40,6 +40,11 @@ class Reynard
         assert_equal @body, response.body
       end
 
+      test 'returns the parse body' do
+        response = response('200', 'OK')
+        assert_equal({ 'id' => 12 }, response.parsed_body)
+      end
+
       test 'builds a response object' do
         response = response('200', 'OK')
         assert_equal 12, response.object.id

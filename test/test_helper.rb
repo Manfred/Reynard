@@ -22,6 +22,12 @@ load_support
 
 class Reynard
   class Test < Minitest::Test
+    include Assertions
+
+    def teardown
+      remove_constants
+    end
+
     def self.test(description, &)
       define_method("test_#{description}", &)
     end
@@ -30,6 +36,12 @@ class Reynard
 
     def fixture_file(path)
       File.join(FILES_ROOT, path)
+    end
+
+    def remove_constants
+      Reynard::Models.constants.each do |constant|
+        Reynard::Models.send(:remove_const, constant)
+      end
     end
   end
 end

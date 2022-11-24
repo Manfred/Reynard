@@ -15,6 +15,7 @@ module Integration
     end
 
     def teardown
+      super
       WebMock.disable_net_connect!
     end
 

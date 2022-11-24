@@ -79,7 +79,78 @@ response.code #=> '200'
 response.content_type #=> 'application/json'
 response['Content-Type'] #=> 'application/json'
 response.body #=> '{"name":"Sam Seven"}'
+response.parsed_body #=> { "name" => "Sam Seven" }
 ```
+
+## Schema and models
+
+Reynard has an object builder that allows you to get a value object backed by model classes based on the resource schema.
+
+For example, when the schema for a response is something like this:
+
+```yaml
+book:
+  type: object
+  properties:
+    name:
+      type: string
+    author:
+      type: object
+      properties:
+        name:
+          type: string
+```
+
+And the parsed body from the response is:
+
+```json
+{
+  "name": "Erebus",
+  "author": { "name": "Palin" }
+}
+```
+
+You should be able to access it using:
+
+```ruby
+response.object.class #=> Reynard::Models::Book
+response.object.author.class #=> Reynard::Models::Author
+response.object.author.name #=> 'Palin'
+```
+
+### Model name
+
+Model names are determined in order:
+
+1. From the `title` attribute of a schema
+2. From the `$ref` pointing to the schema
+3. From the path to the definition of the schema
+
+```yaml
+application/json:
+  schema:
+    $ref: "#/components/schemas/Book"
+components:
+  schemas:
+    Book:
+      type: object
+      title: LibraryBook
+```
+
+In this example it would use the `title` and the model name would be `LibraryBook`. Otherwise it would use `Book` from the end of the `$ref`.
+
+If neither of those are available it would look at the full expanded path. 
+
+```
+books:
+  type: array
+  items:
+    type: object
+```  
+
+For example, in case of an array item it would look at `books` and singularize it to `Book`.
+
+If you run into issues where Reynard doesn't properly build an object for a nested resource, it's probably because of a naming issue. It's advised to add a `title` property to the schema definition with a unique name in that case.
 
 ## Logging
 
