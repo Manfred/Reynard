@@ -66,10 +66,7 @@ class Reynard
       response, media_type = media_type_response(responses, response_code, media_type)
       return unless response
 
-      MediaType.new(
-        node: [*operation_node, 'responses', response_code, 'content', media_type],
-        schema_name: schema_name(response)
-      )
+      MediaType.new(node: [*operation_node, 'responses', response_code, 'content', media_type])
     end
 
     def media_type_response(responses, response_code, media_type)
@@ -83,14 +80,9 @@ class Reynard
     end
 
     def schema(media_type_node)
-      schema = dig(*media_type_node, 'schema')
-      return unless schema
+      return unless dig(*media_type_node, 'schema')
 
-      Schema.new(
-        node: [*media_type_node, 'schema'],
-        object_type: schema['type'],
-        item_schema_name: item_schema_name(schema)
-      )
+      Schema.new(specification: self, node: [*media_type_node, 'schema'])
     end
 
     def self.media_type_matches?(media_type, expression)
@@ -98,26 +90,6 @@ class Reynard
       return true if expression == media_type
 
       false
-    end
-
-    def self.normalize_model_name(name)
-      # 1. Unescape encoded characters to create an UTF-8 string
-      # 2. Remove extensions for regularly used external schema files
-      # 3. Replace all non-alphabetic characters with a space (not allowed in Ruby constant)
-      # 4. Camelcase
-      Rack::Utils.unescape_path(name)
-                 .gsub(/(.yml|.yaml|.json)\Z/, '')
-                 .gsub(/[^[:alpha:]]/, ' ')
-                 .gsub(/(\s+)([[:alpha:]])/) { Regexp.last_match(2).upcase }
-                 .gsub(/\A(.)/) { Regexp.last_match(1).upcase }
-    end
-
-    def self.normalize_model_title(title)
-      title
-        .gsub(/[^[:alpha:]]/, ' ')
-        .gsub(/\s{2,}/, ' ')
-        .gsub(/(\s+)([[:alpha:]])/) { Regexp.last_match(2).upcase }
-        .strip
     end
 
     private
@@ -156,27 +128,5 @@ class Reynard
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/CyclomaticComplexity
     # rubocop:enable Metrics/MethodLength
-
-    def schema_name(response)
-      extract_schema_name(response['schema'])
-    end
-
-    def item_schema_name(schema)
-      if schema['type'] == 'array'
-        extract_schema_name(schema['items'])
-      else
-        extract_schema_name(schema)
-      end
-    end
-
-    def extract_schema_name(definition)
-      ref = definition['$ref']
-      return self.class.normalize_model_name(ref&.split('/')&.last) if ref
-
-      title = definition['title']
-      return unless title
-
-      self.class.normalize_model_title(title)
-    end
   end
 end
