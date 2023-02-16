@@ -25,8 +25,12 @@ class Reynard
         Net::HTTP.const_get(@request_context.verb.capitalize)
       end
 
+      def request_headers
+        { 'User-Agent' => Reynard.user_agent }.merge(@request_context.headers || {})
+      end
+
       def build_request
-        request = request_class.new(uri, @request_context.headers)
+        request = request_class.new(uri, request_headers)
         if @request_context.body
           @request_context.logger&.debug { @request_context.body }
           request.body = @request_context.body
