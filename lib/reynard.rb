@@ -42,6 +42,12 @@ class Reynard
     attr_writer :http
   end
 
+  # Returns a value that will be used by default for Reynard's User-Agent headers. Please use
+  # the +headers+ setter on the context if you want to change this.
+  def self.user_agent
+    "Reynard/#{Reynard::VERSION}"
+  end
+
   # Returns Reynard's global request interface. This is a global object to allow persistent
   # connections, caching, and other features that need a persistent object in the process.
   def self.http

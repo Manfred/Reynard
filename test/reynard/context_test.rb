@@ -173,6 +173,29 @@ class Reynard
       assert_equal 1, lines.length
       assert lines[0].end_with?('INFO -- : POST http://example.com/v1/books')
     end
+
+    test 'includes the User-Agent with a request' do
+      stub_request(:get, 'http://example.com/v1/books').with(
+        headers: { 'User-Agent' => Reynard.user_agent.to_s }
+      ).and_return(
+        body: '[{"id":1},{"id":2},{"id":3}]'
+      )
+      response = @context.operation('listBooks').execute
+      assert_equal '200', response.code
+      assert_equal [1, 2, 3], response.object.map(&:id)
+    end
+
+    test 'allows customization of the User-Agent' do
+      user_agent = 'Weeeeeeeeeeeeee/1.1'
+      stub_request(:get, 'http://example.com/v1/books').with(
+        headers: { 'User-Agent' => user_agent }
+      ).and_return(
+        body: '[{"id":1},{"id":2},{"id":3}]'
+      )
+      response = @context.headers({ 'User-Agent' => user_agent }).operation('listBooks').execute
+      assert_equal '200', response.code
+      assert_equal [1, 2, 3], response.object.map(&:id)
+    end
   end
 
   class BareContextTest < Reynard::Test

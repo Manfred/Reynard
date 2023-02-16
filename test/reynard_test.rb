@@ -93,6 +93,10 @@ class ReynardTest < Reynard::Test
     end
   end
 
+  test 'return a User-Agent string with its version' do
+    assert_equal "Reynard/#{Reynard::VERSION}", Reynard.user_agent
+  end
+
   test 'performs a request with a different HTTP implementation' do
     before = Reynard.http
     Reynard.http = Mock.new
