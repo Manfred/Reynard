@@ -2,15 +2,18 @@ name: Run tests
 on: [push]
 jobs:
   build:
+    strategy:
+      matrix:
+        version: ['ruby:3.1', 'ruby:3.0']
     runs-on: ubuntu-latest
-    container: ruby:3.1
+    container: ${{ matrix.version }}
     steps:
       - uses: actions/checkout@v2
       - name: Bundler cache
         uses: actions/cache@v1
         with:
           path: vendor/bundle
-          key: ${{ runner.os }}-bundler-${{ hashFiles('Gemfile.lock') }}
+          key: ${{ runner.os }}-${{ matrix.version }}-bundler-${{ hashFiles('Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
