@@ -13,7 +13,7 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       books = Reynard::ObjectBuilder.new(
-        schema:,
+        schema: schema,
         parsed_body: [{ id: 42, name: 'Black Science' }, { id: 51, name: 'Dead Astronauts' }]
       ).call
 
@@ -36,7 +36,7 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       book = Reynard::ObjectBuilder.new(
-        schema:,
+        schema: schema,
         parsed_body: { id: 42, name: 'Black Science' }
       ).call
       assert_model_name('Book', book)
@@ -55,7 +55,7 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       author = Reynard::ObjectBuilder.new(
-        schema:,
+        schema: schema,
         parsed_body: { id: 42, name: 'Jerry Writer' }
       ).call
       assert_model_name('Author', author)
@@ -74,7 +74,7 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       collection = Reynard::ObjectBuilder.new(
-        schema:,
+        schema: schema,
         parsed_body: [
           {
             isbn: '9781534307407',
@@ -106,7 +106,7 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       record = Reynard::ObjectBuilder.new(
-        schema:,
+        schema: schema,
         parsed_body: { name: '😇' }
       ).call
       assert_model_name('AFRootWithInThe', record)
@@ -140,8 +140,8 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       library = Reynard::ObjectBuilder.new(
-        schema:,
-        parsed_body:
+        schema: schema,
+        parsed_body: parsed_body
       ).call
       assert_model_name('Library', library)
       assert_kind_of(Array, library.books)
