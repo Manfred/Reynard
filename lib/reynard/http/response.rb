@@ -69,9 +69,9 @@ class Reynard
       end
 
       def build_object_with_media_type(media_type)
-        ::Reynard::ObjectBuilder.new(
+        ObjectBuilder.new(
           schema: @specification.schema(media_type.node),
-          parsed_body:
+          parsed_body: parsed_body
         ).call
       end
 

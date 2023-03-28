@@ -33,7 +33,7 @@ class Reynard
   autoload :VERSION, 'reynard/version'
 
   def initialize(filename:)
-    @specification = Specification.new(filename:)
+    @specification = Specification.new(filename: filename)
   end
 
   class << self

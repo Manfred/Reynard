@@ -14,7 +14,7 @@ class Reynard
     end
 
     def base_url(base_url)
-      copy(base_url:)
+      copy(base_url: base_url)
     end
 
     def operation(operation_name)
@@ -43,7 +43,7 @@ class Reynard
     end
 
     def logger(logger)
-      copy(logger:)
+      copy(logger: logger)
     end
 
     def execute
@@ -71,7 +71,7 @@ class Reynard
       Reynard::Http::Response.new(
         specification: @specification,
         request_context: @request_context,
-        http_response:
+        http_response: http_response
       )
     end
   end
