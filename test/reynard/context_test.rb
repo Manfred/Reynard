@@ -254,6 +254,7 @@ class Reynard
       assert_equal 'Townstreet', author.street_name
       assert_equal 'Townstreet', author.streetName
       assert_equal 'false', author.first_class
+      assert_equal 'false', author['1st-class']
     end
   end
 end

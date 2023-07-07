@@ -29,6 +29,10 @@ class Reynard
       assert_equal 12, @model.age
     end
 
+    test 'allows access to attributes through [] accessor' do
+      assert_equal 'James', @model['name']
+    end
+
     test 'does not build a model for nested resources' do
       assert_kind_of(Hash, @model.address)
     end
@@ -61,6 +65,11 @@ class Reynard
 
     test 'returns correct values for mapped properties' do
       assert_equal 'false', @author.first_class
+    end
+
+    test 'allows access to attributes through [] accessor' do
+      assert_equal 'James', @author['first_name']
+      assert_equal 'false', @author['1st-class']
     end
   end
 
