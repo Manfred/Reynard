@@ -61,11 +61,14 @@ class Reynard
       author = Reynard::ObjectBuilder.new(
         schema: schema,
         inflector: @inflector,
-        parsed_body: { id: 42, name: 'Jerry Writer' }
+        parsed_body: {
+          id: 42, name: 'Jerry Writer', bio: { age: 42 }
+        }
       ).call
       assert_model_name('Author', author)
       assert_equal 42, author.id
       assert_equal 'Jerry Writer', author.name
+      assert_equal 42, author.bio.age
     end
   end
 

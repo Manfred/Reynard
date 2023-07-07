@@ -8,4 +8,6 @@ properties:
     type: integer
   name:
     type: string
+  bio:
+    "$ref": "./bio.yml"
 additionalProperties: false

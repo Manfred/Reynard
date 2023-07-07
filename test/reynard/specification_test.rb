@@ -234,6 +234,15 @@ class Reynard
       assert_equal 'integer', data
     end
 
+    test 'digs into an external file through a reference in an external file' do
+      data = @specification.dig(
+        'paths', '/authors/{id}', 'get', 'responses', '200',
+        'content', 'application/json', 'schema',
+        'properties', 'bio', 'properties', 'age', 'type'
+      )
+      assert_equal 'integer', data
+    end
+
     test 'digs into an external file with an anchor' do
       data = @specification.dig(
         'paths', '/authors/{id}', 'get', 'responses', 'default',
@@ -242,7 +251,7 @@ class Reynard
       assert_equal %w[code message], data['required']
     end
 
-    test 'digs into an external file through a refenence with with an anchor' do
+    test 'digs into an external file through a reference with with an anchor' do
       data = @specification.dig(
         'paths', '/authors/{id}', 'get', 'responses', 'default',
         'content', 'application/json', 'schema', 'required'

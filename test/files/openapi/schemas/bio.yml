@@ -1,0 +1,9 @@
+type: object
+title: Bio
+description: >-
+  Biographical details about an author.
+required: [age]
+properties:
+  age:
+    type: integer
+additionalProperties: false
