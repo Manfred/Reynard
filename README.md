@@ -210,7 +210,7 @@ response.object.send("1st-class")
 
 #### Mapping properties
 
-In case you are forced to access a property through a method, you could chose to map irregular property names to method names globally for all models:
+In case you are forced to access a property through a method, you could choose to map irregular property names to method names globally for all models:
 
 ```ruby
 reynard.snake_cases({ "1st-class" => "first_class" })
