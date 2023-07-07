@@ -48,7 +48,7 @@ reynard.base_url(base_url)
 
 ## Calling endpoints
 
-Assuming there is an operation called `employeeByUuid` you can it as shown below.
+Assuming there is an operation with the `operationId` set to `employeeByUuid` you can perform a request as shown below. Note that `operationId` is a required property in the specs.
 
 ```ruby
 response = reynard.
@@ -57,7 +57,7 @@ response = reynard.
   execute
 ```
 
-When an operation requires a body, you can add it as structured data.
+When an operation requires a body, you can add it as structured data. It will be converted to JSON automatically.
 
 ```ruby
 response = reynard.
@@ -66,13 +66,7 @@ response = reynard.
   execute
 ```
 
-In case the response matches a response in the specification it will attempt to build an object using the specified schema.
-
-```ruby
-response.object.name #=> 'Sam Seven'
-```
-
-The response object shared much of its interface with `Net::HTTP::Response`.
+The response object shares much of its interface with `Net::HTTP::Response`.
 
 ```ruby
 response.code #=> '200'
@@ -81,6 +75,24 @@ response['Content-Type'] #=> 'application/json'
 response.body #=> '{"name":"Sam Seven"}'
 response.parsed_body #=> { "name" => "Sam Seven" }
 ```
+
+You can test for groups of response codes, basically matching `1xx` through `5xx`.
+
+```ruby
+response.informational?
+response.success?
+response.redirection?
+response.client_error?
+response.server_error?
+```
+
+In case the response status and content-type matches a response in the specification it will attempt to build an object using the specified schema.
+
+```ruby
+response.object.name #=> 'Sam Seven'
+```
+
+See below for more details about the object builder.
 
 ## Schema and models
 
@@ -218,6 +230,82 @@ Don't use this to map common property names that would work fine otherwise, beca
 reynard.snake_cases({ "name" => "naem" })
 ```
 
+### Optional properties
+
+The current version of Reynard does not read or enforce the properties defined in the schema, instead it builds the response object based on the properties returned by the service. This was done deliberately to make it easier to access a server with a newer or older schema than the one used to build the Reynard instance.
+
+In the code that means that you may have to check if you are receiving certain attributes, you can do this in a number of ways:
+
+```ruby
+response.object.respond_to?(:name)
+response.parsed_body["name"]
+response.object["name"]
+```
+
+### Taking control of a model
+
+As noted earlier there is a deterministic way in which Reynard decides on a model name. This means that you can define the model name before Reynard gets to it.
+
+The easiest way to find out how Reynard does this, is to actually perform the operation and look at the response. Let's look at an example where Reynard creates  a `Library` model:
+
+```ruby
+response.object.class #=> Reynard::Models::Library
+response.parsed_body #=> {"name" => "Alexandria"}
+```
+
+One way to ensure that the response object has the required attributes is to defined a `valid?` method on it:
+
+
+```ruby
+class Reynard
+  module Models
+    class Library < Reynard::Model
+      def valid?
+        (%w[name] - @attributes.keys).empty?
+      end
+    end
+  end
+end
+```
+
+Next time you perform a request you can use your version of `Library`:
+
+```ruby
+if response.object.valid?
+  puts "The library is valid!"
+else
+  puts "The library is not valid :-( #{response.parsed_object.inspect}"
+end
+```
+
+Another way to do this is to override the `attributes=` method.
+
+```ruby
+def attributes=(attributes)
+  super # call super or nested attributes and other features will break
+  raise_invalid unless valid?
+end
+
+private
+
+def raise_invalid
+  return if valid?
+
+  raise(
+    ArgumentError,
+    "Library may not be initialized without all required attributes."
+  )
+end
+```
+
+A third way of dealing with optional attributes is to define an accessor yourself.
+
+```ruby
+def name
+  @attributes.fetch("name") { "Unnnamed library" }
+end
+```
+
 ## Logging
 
 When you want to know what the Reynard client is doing you can enable logging.
@@ -232,6 +320,19 @@ The logging should be compatible with the Ruby on Rails logger.
 
 ```ruby
 reynard.logger(Rails.logger).execute
+```
+
+## Headers
+
+You can add request headers at any time to a Reynard context, these are additive so you can easily have global headers for all requests and specific ones for an operation.
+
+```ruby
+reynard = reynard.headers(
+  {
+    "User-Agent" => "MyApplication/12.1.1 Reynard/#{Reynard::VERSION}",
+    "Accept" => "application/json"
+  }
+)
 ```
 
 ## Debugging
