@@ -7,8 +7,9 @@ class Reynard
   class ObjectBuilder
     attr_reader :schema, :parsed_body
 
-    def initialize(schema:, parsed_body:, model_name: nil)
+    def initialize(schema:, inflector:, parsed_body:, model_name: nil)
       @schema = schema
+      @inflector = inflector
       @parsed_body = parsed_body
       @model_name = model_name
     end
@@ -21,7 +22,8 @@ class Reynard
       return @model_class if defined?(@model_class)
 
       @model_class =
-        self.class.model_class_get(model_name) || self.class.model_class_set(model_name, schema)
+        self.class.model_class_get(model_name) ||
+        self.class.model_class_set(model_name, schema, @inflector)
     end
 
     def call
@@ -41,11 +43,11 @@ class Reynard
       nil
     end
 
-    def self.model_class_set(model_name, schema)
+    def self.model_class_set(model_name, schema, inflector)
       if schema.type == 'array'
         array_model_class_set(model_name)
       else
-        object_model_class_set(model_name, schema)
+        object_model_class_set(model_name, schema, inflector)
       end
     end
 
@@ -55,11 +57,12 @@ class Reynard
       ::Reynard::Models.const_set(model_name, Class.new(Array))
     end
 
-    def self.object_model_class_set(model_name, schema)
+    def self.object_model_class_set(model_name, schema, inflector)
       return Reynard::Model unless model_name
 
       model_class = Class.new(Reynard::Model)
       model_class.schema = schema
+      model_class.inflector = inflector
       ::Reynard::Models.const_set(model_name, model_class)
     end
 
@@ -73,6 +76,7 @@ class Reynard
       parsed_body.each do |item|
         array << self.class.new(
           schema: item_schema,
+          inflector: @inflector,
           parsed_body: item
         ).call
       end
