@@ -8,6 +8,7 @@ class Reynard
     def initialize(path:, ref:)
       @path = path
       @relative_path, @anchor = ref.split('#', 2)
+      @filename = File.expand_path(@relative_path, @path)
     end
 
     def path
@@ -22,11 +23,14 @@ class Reynard
       end
     end
 
+    def filesystem_path
+      File.dirname(@filename)
+    end
+
     private
 
     def filename
-      filename = File.expand_path(@relative_path, @path)
-      return filename if filename.start_with?(@path)
+      return @filename if @filename.start_with?(@path)
 
       raise 'You are only allowed to reference files relative to the specification file.'
     end

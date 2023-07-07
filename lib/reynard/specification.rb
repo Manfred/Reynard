@@ -14,7 +14,7 @@ class Reynard
 
     # Digs a value out of the specification, taking $ref into account.
     def dig(*path)
-      dig_into(@data, @data, path.dup)
+      dig_into(@data, @data, path.dup, File.dirname(@filename))
     end
 
     def servers
@@ -103,7 +103,7 @@ class Reynard
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/CyclomaticComplexity
     # rubocop:disable Metrics/MethodLength
-    def dig_into(data, cursor, path)
+    def dig_into(data, cursor, path, filesystem_path)
       while path.length.positive?
         cursor = cursor[path.first]
         return unless cursor
@@ -118,7 +118,8 @@ class Reynard
           cursor = data
         # References another file, with an optional anchor to an element in the data.
         when %r{\A\./}
-          external = External.new(path: File.dirname(@filename), ref: cursor['$ref'])
+          external = External.new(path: filesystem_path, ref: cursor['$ref'])
+          filesystem_path = external.filesystem_path
           path = external.path + path
           cursor = external.data
         end
