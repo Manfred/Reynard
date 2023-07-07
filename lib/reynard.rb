@@ -13,11 +13,13 @@ class Reynard
   extend Forwardable
   def_delegators :build_context, :logger, :base_url, :operation, :headers, :params
   def_delegators :@specification, :servers
+  def_delegators :@inflector, :snake_cases
 
   autoload :Context, 'reynard/context'
   autoload :External, 'reynard/external'
   autoload :GroupedParameters, 'reynard/grouped_parameters'
   autoload :Http, 'reynard/http'
+  autoload :Inflector, 'reynard/inflector'
   autoload :Logger, 'reynard/logger'
   autoload :MediaType, 'reynard/media_type'
   autoload :Model, 'reynard/model'
@@ -34,6 +36,7 @@ class Reynard
 
   def initialize(filename:)
     @specification = Specification.new(filename: filename)
+    @inflector = Inflector.new
   end
 
   class << self
@@ -61,6 +64,6 @@ class Reynard
   private
 
   def build_context
-    Context.new(specification: @specification)
+    Context.new(specification: @specification, inflector: @inflector)
   end
 end

@@ -7,6 +7,11 @@ class ReynardTest < Reynard::Test
     @reynard = Reynard.new(filename: fixture_file('openapi/simple.yml'))
   end
 
+  test 'registers additional inflection exceptions' do
+    @reynard.snake_cases({ '1st-class' => 'first_class' })
+    assert_equal 'first_class', @reynard.instance_variable_get('@inflector').snake_case('1st-class')
+  end
+
   test 'returns all available servers' do
     servers = @reynard.servers
     assert_equal 2, servers.length
