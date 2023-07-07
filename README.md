@@ -201,7 +201,7 @@ There are two alternatives for accessing this property:
 # parsed JSON on the response object.
 response.parsed_body["1st-class"]
 # When you are processing nested models and you don't have access to the
-# response object, you can chose to use the `[]` method.
+# response object, you can choose to use the `[]` method.
 response.object["1st-class"]
 # Don't use `send` to access the property, this may not work in future
 # versions.
