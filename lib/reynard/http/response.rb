@@ -8,8 +8,9 @@ class Reynard
       extend Forwardable
       def_delegators :@http_response, :code, :content_type, :[], :body
 
-      def initialize(specification:, request_context:, http_response:)
+      def initialize(specification:, inflector:, request_context:, http_response:)
         @specification = specification
+        @inflector = inflector
         @request_context = request_context
         @http_response = http_response
       end
@@ -71,6 +72,7 @@ class Reynard
       def build_object_with_media_type(media_type)
         ObjectBuilder.new(
           schema: @specification.schema(media_type.node),
+          inflector: @inflector,
           parsed_body: parsed_body
         ).call
       end
