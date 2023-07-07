@@ -8,8 +8,9 @@ class Reynard
     extend Forwardable
     def_delegators :@request_context, :verb, :path, :full_path, :url
 
-    def initialize(specification:, request_context: nil)
+    def initialize(specification:, inflector:, request_context: nil)
       @specification = specification
+      @inflector = inflector
       @request_context = request_context || build_request_context
     end
 
@@ -59,6 +60,7 @@ class Reynard
     def copy(**properties)
       self.class.new(
         specification: @specification,
+        inflector: @inflector,
         request_context: @request_context.copy(**properties)
       )
     end
@@ -70,6 +72,7 @@ class Reynard
     def build_response(http_response)
       Reynard::Http::Response.new(
         specification: @specification,
+        inflector: @inflector,
         request_context: @request_context,
         http_response: http_response
       )

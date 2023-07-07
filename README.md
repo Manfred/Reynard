@@ -152,6 +152,72 @@ For example, in case of an array item it would look at `books` and singularize i
 
 If you run into issues where Reynard doesn't properly build an object for a nested resource, it's probably because of a naming issue. It's advised to add a `title` property to the schema definition with a unique name in that case.
 
+### Properties and model attributes
+
+Reynard provides access to JSON properties on the model in a number of ways. There are some restrictions because of Ruby, so it's good to understand them.
+
+Let's assume there is a payload for an `Author` model that looks like this:
+
+```json
+{"first_name":"Marcél","lastName":"Marcellus","1st-class":false}
+```
+
+Reynard attemps to give access to these properties as much as possible by sanitizing and normalizing them, so you can do the following:
+
+```ruby
+response.object.first_name #=> "Marcél"
+response.object.last_name #=> "Marcellus"
+```
+
+But it's also possible to use the original casing for `lastName`.
+
+```ruby
+response.object.lastName #=> "Marcellus"
+```
+
+However, a method can't start with a number and can't contain dashes in Ruby so the following is not possible:
+
+```
+# Not valid Ruby syntax:
+response.object.1st-class
+```
+
+There are two alternatives for accessing this property:
+
+```ruby
+# The preferred solution for accessing raw property values is through the
+# parsed JSON on the response object.
+response.parsed_body["1st-class"]
+# When you are processing nested models and you don't have access to the
+# response object, you can chose to use the `[]` method.
+response.object["1st-class"]
+# Don't use `send` to access the property, this may not work in future
+# versions.
+response.object.send("1st-class")
+```
+
+#### Mapping properties
+
+In case you are forced to access a property through a method, you could chose to map irregular property names to method names globally for all models:
+
+```ruby
+reynard.snake_cases({ "1st-class" => "first_class" })
+```
+
+This will allow you to access the property through the `first_class` method without changing the behavior of the rest of the object.
+
+```ruby
+response.object.first_class #=> false
+response.object["1st-class"] #=> false
+```
+
+Don't use this to map common property names that would work fine otherwise, because you could make things really confusing.
+
+```ruby
+# Don't do this.
+reynard.snake_cases({ "name" => "naem" })
+```
+
 ## Logging
 
 When you want to know what the Reynard client is doing you can enable logging.

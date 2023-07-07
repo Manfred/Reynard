@@ -9,6 +9,7 @@ class Reynard
     class ResponseTest < Reynard::Test
       def setup
         @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
+        @inflector = Inflector.new
         @request_context = RequestContext.new(
           base_url: @specification.default_base_url,
           headers: {},
@@ -27,6 +28,7 @@ class Reynard
 
         @response = Response.new(
           specification: @specification,
+          inflector: @inflector,
           request_context: @request_context,
           http_response: @http_response
         )

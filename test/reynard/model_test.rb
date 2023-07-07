@@ -5,7 +5,7 @@ require_relative '../test_helper'
 class Reynard
   class ModelTest < Reynard::Test
     def setup
-      @model = Model.new(name: 'James', age: 12, address: { zipcode: '66232A' })
+      @model = Model.new({ 'name' => 'James', 'age' => 12, 'address' => { 'zipcode' => '66232A' } })
     end
 
     test 'responds to attributes' do
@@ -29,8 +29,83 @@ class Reynard
       assert_equal 12, @model.age
     end
 
+    test 'allows access to attributes through [] accessor' do
+      assert_equal 'James', @model['name']
+    end
+
     test 'does not build a model for nested resources' do
       assert_kind_of(Hash, @model.address)
+    end
+  end
+
+  class AttributeNameModelTest < Reynard::Test
+    class Author < Model; end
+
+    def setup
+      Author.inflector.snake_cases({ '1st-class' => 'first_class' })
+      @author = Author.new(
+        {
+          'first_name' => 'James',
+          '1st-class' => 'false'
+        }
+      )
+    end
+
+    test 'responds to regular attributes' do
+      assert @author.respond_to?(:first_name)
+    end
+
+    test 'responds to mapped properties' do
+      assert @author.respond_to?(:first_class)
+    end
+
+    test 'returns correct values for regular attributes' do
+      assert_equal 'James', @author.first_name
+    end
+
+    test 'returns correct values for mapped properties' do
+      assert_equal 'false', @author.first_class
+    end
+
+    test 'allows access to attributes through [] accessor' do
+      assert_equal 'James', @author['first_name']
+      assert_equal 'false', @author['1st-class']
+    end
+  end
+
+  class AttributeNameWithInflectionsModelTest < Reynard::Test
+    def setup
+      @model = Model.new(
+        'firstName' => 'James',
+        'LastName' => 'Jameson',
+        'ORIGINAL' => 'original',
+        'ignore__Experience' => 'experience',
+        '__pragma' => 'keep',
+        'first5' => 'true',
+        '12RulesFOR' => 'mist'
+      )
+    end
+
+    test 'responds to normalized attributes' do
+      %i[
+        first_name
+        last_name
+        original
+        ignore__experience
+        __pragma
+        first5
+        12_rules_for
+      ].each do |attribute_name|
+        assert(
+          @model.respond_to?(attribute_name, private: false),
+          "Expected #{@model.inspect} to respond to #{attribute_name}"
+        )
+      end
+    end
+
+    test 'returns correct values for normalized attributes' do
+      assert_equal 'James', @model.first_name
+      assert_equal 'keep', @model.__pragma
     end
   end
 
@@ -56,7 +131,7 @@ class Reynard
       )
       @model_class = Class.new(Reynard::Model)
       @model_class.schema = @schema
-      @model = @model_class.new(name: 'Erebus', author: { name: 'Palin' })
+      @model = @model_class.new({ 'name' => 'Erebus', 'author' => { 'name' => 'Palin' } })
     end
 
     test 'responds to attributes' do

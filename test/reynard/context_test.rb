@@ -7,7 +7,10 @@ class Reynard
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
       @request_context = RequestContext.new(base_url: @specification.default_base_url, headers: {})
-      @context = Context.new(specification: @specification, request_context: @request_context)
+      @inflector = Inflector.new
+      @context = Context.new(
+        specification: @specification, inflector: @inflector, request_context: @request_context
+      )
     end
 
     test 'does not have a verb without an operation' do
@@ -202,7 +205,10 @@ class Reynard
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/bare.yml'))
       @request_context = RequestContext.new(base_url: @specification.default_base_url, headers: {})
-      @context = Context.new(specification: @specification, request_context: @request_context)
+      @inflector = Inflector.new
+      @context = Context.new(
+        specification: @specification, inflector: @inflector, request_context: @request_context
+      )
     end
 
     test 'returns a generic result when response is not defined' do
@@ -212,6 +218,43 @@ class Reynard
       response = @context.operation('listClowns').execute
       assert_kind_of Reynard::Model, response.object
       assert_equal 'Howdy', response.object.message
+    end
+  end
+
+  class InflectorContextTest < Reynard::Test
+    def setup
+      @specification = Specification.new(filename: fixture_file('openapi/nested.yml'))
+      @request_context = RequestContext.new(base_url: @specification.default_base_url, headers: {})
+      @inflector = Inflector.new
+      @inflector.snake_cases({ '1st-class' => 'first_class' })
+      @context = Context.new(
+        specification: @specification, inflector: @inflector, request_context: @request_context
+      )
+    end
+
+    test 'allows access to irregular properties through snake case methods' do
+      stub_request(:get, 'http://example.com/v1/library').and_return(
+        status: 200, body: JSON.dump(
+          {
+            'name' => '1st Library',
+            'books' => [
+              {
+                'name' => 'Erebus', 'author' => {
+                  'name' => 'Palin', 'streetName' => 'Townstreet', '1st-class' => 'false'
+                }
+              }
+            ]
+          }
+        )
+      )
+      response = @context.operation('showLibrary').execute
+      assert_kind_of Reynard::Model, response.object
+      author = response.object.books[0].author
+      assert_equal 'Palin', author.name
+      assert_equal 'Townstreet', author.street_name
+      assert_equal 'Townstreet', author.streetName
+      assert_equal 'false', author.first_class
+      assert_equal 'false', author['1st-class']
     end
   end
 end
