@@ -28,7 +28,11 @@ class Reynard
     # Until we can set accessors based on the schema
     def method_missing(attribute_name, *)
       attribute_name = attribute_name.to_s
-      @attributes[attribute_name] || @attributes.fetch(@snake_cases.fetch(attribute_name))
+      if @attributes.key?(attribute_name)
+        @attributes[attribute_name]
+      else
+        @attributes.fetch(@snake_cases.fetch(attribute_name))
+      end
     rescue KeyError
       raise NoMethodError, "undefined method `#{attribute_name}' for #{inspect}"
     end
