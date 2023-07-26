@@ -14,9 +14,17 @@ class Reynard
     end
 
     def initialize(attributes)
-      @attributes = {}
-      @snake_cases = self.class.snake_cases(attributes.keys)
-      self.attributes = attributes
+      if attributes.respond_to?(:each)
+        @attributes = {}
+        @snake_cases = self.class.snake_cases(attributes.keys)
+        self.attributes = attributes
+      else
+        raise(
+          ArgumentError,
+          'Models must be initialized with an enumerable object that behaves like a hash, got: ' \
+          "`#{attributes.inspect}'"
+        )
+      end
     end
 
     def attributes=(attributes)
@@ -47,6 +55,7 @@ class Reynard
     end
 
     def self.cast(name, value)
+      return if value.nil?
       return value unless schema
 
       property = schema.property_schema(name)

@@ -50,6 +50,25 @@ class Reynard
     test 'does not build a model for nested resources' do
       assert_kind_of(Hash, @model.address)
     end
+
+    test 'does not attempt to build an object out of nil values' do
+      assert_nil Model.cast('name', nil)
+    end
+
+    test 'raises an exception when attempting to build and instance with a nil value' do
+      assert_raises(
+        ArgumentError,
+        "Models must be initialized with an enumerable object that behaves like a hash, got: `nil'"
+      ) do
+        Model.new(nil)
+      end
+    end
+
+    test 'raises an exception when attempting to build and instance with a scalar value' do
+      assert_raises(ArgumentError) { Model.new(nil) }
+      assert_raises(ArgumentError) { Model.new(false) }
+      assert_raises(ArgumentError) { Model.new(12) }
+    end
   end
 
   class AttributeNameModelTest < Reynard::Test
@@ -183,6 +202,10 @@ class Reynard
     test 'builds a model for nested resources' do
       assert_kind_of(Reynard::Models::Author, @model.author)
       assert_equal 'Palin', @model.author.name
+    end
+
+    test 'does not attempt to build an object out of nil values' do
+      assert_nil @model_class.cast('author', nil)
     end
   end
 end
