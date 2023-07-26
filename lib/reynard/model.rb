@@ -47,6 +47,7 @@ class Reynard
     end
 
     def self.cast(name, value)
+      return if value.nil?
       return value unless schema
 
       property = schema.property_schema(name)

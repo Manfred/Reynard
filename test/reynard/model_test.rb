@@ -50,6 +50,10 @@ class Reynard
     test 'does not build a model for nested resources' do
       assert_kind_of(Hash, @model.address)
     end
+
+    test 'does not attempt to build an object out of nil values' do
+      assert_nil Model.cast('name', nil)
+    end
   end
 
   class AttributeNameModelTest < Reynard::Test
@@ -183,6 +187,10 @@ class Reynard
     test 'builds a model for nested resources' do
       assert_kind_of(Reynard::Models::Author, @model.author)
       assert_equal 'Palin', @model.author.name
+    end
+
+    test 'does not attempt to build an object out of nil values' do
+      assert_nil @model_class.cast('author', nil)
     end
   end
 end
