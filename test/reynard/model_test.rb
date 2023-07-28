@@ -9,6 +9,7 @@ class Reynard
         {
           'name' => 'James',
           'age' => 12,
+          'display' => true,
           'nickname' => nil,
           'subscribed' => false,
           'address' => {
@@ -18,9 +19,18 @@ class Reynard
       )
     end
 
+    test 'returns a useful value when inspected' do
+      assert_match(/#<Reynard::Model:0x.+>/, @model.inspect)
+    end
+
+    test 'it is not nil' do
+      refute @model.nil?
+    end
+
     test 'responds to attributes' do
       assert @model.respond_to?(:name, private: false)
       assert @model.respond_to?(:nickname, private: false)
+      assert @model.respond_to?(:display, private: false)
       assert @model.respond_to?(:subscribed, private: false)
     end
 
@@ -39,6 +49,7 @@ class Reynard
     test 'returns correct values for attributes' do
       assert_equal 'James', @model.name
       assert_equal 12, @model.age
+      assert_equal true, @model.display
       assert_nil @model.nickname
       assert_equal false, @model.subscribed
     end
@@ -53,6 +64,14 @@ class Reynard
 
     test 'does not attempt to build an object out of nil values' do
       assert_nil Model.cast('name', nil)
+    end
+
+    test 'try returns a value when the attribute exists and the value is set' do
+      assert_equal 'James', @model.try(:name)
+    end
+
+    test 'try returns nil when the attribute does not exist' do
+      assert_nil @model.try(:location)
     end
 
     test 'raises an exception when attempting to build and instance with a nil value' do
@@ -174,9 +193,14 @@ class Reynard
         specification: @specification,
         node: @node
       )
-      @model_class = Class.new(Reynard::Model)
+
+      @model_class = ::Reynard::Models.const_set('Book', Class.new(Reynard::Model))
       @model_class.schema = @schema
       @model = @model_class.new({ 'name' => 'Erebus', 'author' => { 'name' => 'Palin' } })
+    end
+
+    test 'returns a useful value when inspected' do
+      assert_match(/#<Reynard::Models::Book:0x.+>/, @model.inspect)
     end
 
     test 'responds to attributes' do
