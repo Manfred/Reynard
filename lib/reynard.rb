@@ -20,7 +20,6 @@ class Reynard
   autoload :GroupedParameters, 'reynard/grouped_parameters'
   autoload :Http, 'reynard/http'
   autoload :Inflector, 'reynard/inflector'
-  autoload :Logger, 'reynard/logger'
   autoload :MediaType, 'reynard/media_type'
   autoload :Model, 'reynard/model'
   autoload :Models, 'reynard/models'
