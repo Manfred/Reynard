@@ -1,0 +1,22 @@
+name: Defect
+description: Something doesn't work as documented.
+title: "Defect: "
+assignees:
+  - Manfred
+body:
+  - type: input
+    id: feature
+    attributes:
+      label: Feature
+      description: Which Reynard feature is not working as expected?
+      placeholder: Conditional requests
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Please describe what you expected and what actually happened.
+      placeholder: Reynard doesn't return cached items when using Dalli::Client for a store. Instead it throws an exception.
+    validations:
+      required: true
