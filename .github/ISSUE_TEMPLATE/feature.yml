@@ -1,0 +1,22 @@
+name: Feature
+description: Request a new feature.
+title: "Feature request: "
+assignees:
+  - Manfred
+body:
+  - type: input
+    id: feature
+    attributes:
+      label: Feature
+      description: Describe the core of the feature in a few words
+      placeholder: Code generation for models
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Why and what
+      description: Please describe why you want the feature and describe in a few sentences how it should work.
+      placeholder: We would love code generation for models so we can easily add them to the project to expand them. Maybe it's possible to add a command-line command that takes a specification and a switch that points to a response, then it generates code for all possible responses.
+    validations:
+      required: true
