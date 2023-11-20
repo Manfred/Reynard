@@ -59,6 +59,10 @@ class Reynard
       copy(logger: logger)
     end
 
+    def store(store)
+      copy(store: store)
+    end
+
     def execute
       build_response(build_request.perform)
     end
