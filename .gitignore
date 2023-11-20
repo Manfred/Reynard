@@ -1,2 +1,4 @@
-/Gemfile.lock
 /.spectral.yml
+/Gemfile.lock
+/log
+/tmp
