@@ -113,4 +113,9 @@ class ReynardTest < Reynard::Test
   ensure
     Reynard.http = before
   end
+
+  test 'returns an array of supported features' do
+    assert_includes Reynard.supported_features, :conditional_requests
+    assert Reynard.supported_features.frozen?
+  end
 end

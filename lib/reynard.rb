@@ -60,6 +60,11 @@ class Reynard
     end
   end
 
+  # Returns a fixed list of optional features supported by this version of Reynard.
+  def self.supported_features
+    %i[conditional_requests].freeze
+  end
+
   private
 
   def build_context
