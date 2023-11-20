@@ -89,17 +89,17 @@ class ReynardTest < Reynard::Test
     assert_equal apple[:placeholder], object.placeholder
   end
 
+  test 'return a User-Agent string with its version' do
+    assert_equal "Reynard/#{Reynard::VERSION}", Reynard.user_agent
+  end
+
   class Mock
     def request(_uri, _request)
-      response = Net::HTTPResponse::CODE_TO_OBJ['404'].new('HTTP/1.1', '400', 'Not Found')
+      response = Net::HTTPResponse::CODE_TO_OBJ['404'].new('HTTP/1.1', '404', 'Not Found')
       response.instance_variable_set('@read', true)
       response.instance_variable_set('@body', '{"code":404,"message":"Not Found"}')
       response
     end
-  end
-
-  test 'return a User-Agent string with its version' do
-    assert_equal "Reynard/#{Reynard::VERSION}", Reynard.user_agent
   end
 
   test 'performs a request with a different HTTP implementation' do
