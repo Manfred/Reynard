@@ -6,7 +6,9 @@ class Reynard
   class ContextTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
-      @request_context = RequestContext.new(base_url: @specification.default_base_url, headers: {})
+      @request_context = RequestContext.new(
+        base_url: @specification.default_base_url, headers: {}, features: Set.new
+      )
       @inflector = Inflector.new
       @context = Context.new(
         specification: @specification, inflector: @inflector, request_context: @request_context
@@ -97,6 +99,29 @@ class Reynard
                  .execute
       assert_equal '200', response.code
       assert_equal 1, response.object.id
+    end
+
+    test 'executes a conditional request' do
+      stub_request(:get, 'http://example.com/v1/books/1').and_return(status: 304)
+      response = @context
+                 .operation('fetchBook')
+                 .headers('Accept' => 'application/json')
+                 .store(test_file_store)
+                 .enable(:conditional_requests)
+                 .params(id: 1)
+                 .execute
+      assert_equal '304', response.code
+    end
+
+    test 'raises an exception when trying to enable an unsupported feature' do
+      error = assert_raises(ArgumentError) do
+        @context.enable(:unknown_feature)
+      end
+      assert_equal(
+        error.message,
+        "Unsupported feature `unknown_feature', this version of Reynard supports: " \
+        'conditional_requests'
+      )
     end
 
     test 'executes a POST request with a body' do

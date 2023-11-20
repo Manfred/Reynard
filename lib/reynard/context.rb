@@ -43,6 +43,18 @@ class Reynard
       copy(headers: @request_context.headers.merge(headers))
     end
 
+    def enable(feature)
+      if Reynard.supported_features.include?(feature)
+        copy(features: @request_context.features << feature)
+      else
+        raise(
+          ArgumentError,
+          "Unsupported feature `#{feature}', this version of Reynard supports: " \
+          "#{Reynard.supported_features.join(', ')}"
+        )
+      end
+    end
+
     def logger(logger)
       copy(logger: logger)
     end
@@ -54,7 +66,9 @@ class Reynard
     private
 
     def build_request_context
-      RequestContext.new(base_url: @specification.default_base_url, headers: {})
+      RequestContext.new(
+        base_url: @specification.default_base_url, headers: {}, features: Set.new
+      )
     end
 
     def copy(**properties)
