@@ -11,7 +11,7 @@ module Integration
         filename: fixture_file('openapi/simple.yml')
       ).base_url(
         "http://127.0.0.1:#{SimpleService.options.port}"
-      )
+      ).logger(test_logger)
     end
 
     def teardown
