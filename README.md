@@ -306,6 +306,53 @@ def name
 end
 ```
 
+### Conditional requests
+
+> ⚠️ Conditional requests are currently an experimental feature, please use with caution. The class interface may change in the near future.
+
+Reynard can perform conditional requests and cache resources. Please read up on HTTP Conditional Requests if you want to have deeper understanding of the rest of this section.
+
+In the most basic form you only have to configure disk storage and enable conditional requests.
+
+```ruby
+store = Reynard::Store::Disk.new(
+  path: File.join(__dir__, "tmp/reynard")
+)
+reynard = reynard.store(store)
+reynard = reynard.enable(:conditional_requests)
+```
+
+The response body will now be automatically stored on disk when the server returns a `Last-Modified` **or** an `Etag` header and doesn't explicitly disable caching with `Cache-Control`. Reynard will add `If-Modified-Since` and/or `If-None-Match` headers to subsequent requests and serve the response body from disk in case the server responds with a ‘304 Not Modified’ unless it knows the `max-age` of the cached resource has expired.
+
+#### Disk store
+
+You may notice two files on disk for each resource with the `.info` and `.data` extensions. Reynard currently uses nested directories to prevent running into limits, this scheme may change in the future.
+
+Most filesystems don't have options for self-expiring files, so you will be responsible for clearing the cache at an opportune time.
+
+```ruby
+store.clear
+```
+
+Note that `Store::Disk` is not thread-safe, possibly slow, and mostly meant for quick setup or testing when you don't want additional dependencies. Please consider different storage options for production use.
+
+#### Store options
+
+When you can't write to a filesystem, or when performance for accessing metadata if not good enough you can choose alternative stores. The interface to these stores is the same as `ActiveSupport::Cache::Store` so you can use the Rails cache too.
+
+```ruby
+reynard = reynard.store(Rails.cache)
+```
+
+But you can also write your own cache by implementing the following methods:
+
+* `read(key)`: Returns value for key or `nil`.
+* `write(key, value)`: Writes value for key.
+* `prune`: Remove keys that have expired (optional).
+* `clear`: Clear the entire cache (optional).
+
+See `Reynard::Store::Disk` in the source code for an example.
+
 ## Logging
 
 When you want to know what the Reynard client is doing you can enable logging.
