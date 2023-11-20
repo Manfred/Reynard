@@ -3,6 +3,7 @@
 class Reynard
   # Value class for details about the request.
   RequestContext = Struct.new(
+    :features,
     :logger,
     :base_url,
     :operation,

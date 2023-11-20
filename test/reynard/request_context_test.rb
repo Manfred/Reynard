@@ -102,6 +102,7 @@ class Reynard
 
     test 'can replace all properties when copying' do
       properties = {
+        features: Set.new(Reynard.supported_features),
         base_url: 'https://example.com/v3',
         operation: @specification.operation('fetchBook'),
         headers: { 'Accept' => 'application/json' },
