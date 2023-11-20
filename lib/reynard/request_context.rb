@@ -5,6 +5,7 @@ class Reynard
   RequestContext = Struct.new(
     :features,
     :logger,
+    :store,
     :base_url,
     :operation,
     :headers,
