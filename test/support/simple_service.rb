@@ -22,7 +22,9 @@ class SimpleService
       when '/books'
         handle_collection(http_request, http_response)
       when %r{/books/(\d+)}
-        handle_member(Regexp.last_match(1).to_i, http_response)
+        if_none_match_value = http_request['If-None-Match']
+        if_none_match = if_none_match_value ? if_none_match_value.split(',').map(&:strip) : []
+        handle_member(Regexp.last_match(1).to_i, http_response, if_none_match: if_none_match)
       else
         respond_with_not_found(http_response)
       end
@@ -40,10 +42,18 @@ class SimpleService
       end
     end
 
-    def handle_member(id, http_response)
+    def handle_member(id, http_response, if_none_match:)
       book = find(id)
       if book
-        http_response.body = MultiJson.dump(book)
+        json = MultiJson.dump(book)
+        etag = %(W/"#{Digest::SHA1.hexdigest(json)}")
+        if if_none_match.include?(etag)
+          http_response.status = 304
+        else
+          http_response['Etag'] = etag
+          http_response['Last-Modified'] = Time.now.httpdate
+          http_response.body = json
+        end
       else
         respond_with_not_found(http_response)
       end

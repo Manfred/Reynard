@@ -26,7 +26,21 @@ class Reynard
       end
 
       def request_headers
-        { 'User-Agent' => Reynard.user_agent }.merge(@request_context.headers || {})
+        { 'User-Agent' => Reynard.user_agent }.merge(request_context_headers)
+      end
+
+      def request_context_headers
+        (@request_context.headers || {}).merge(conditional_request_headers)
+      end
+
+      def conditional_request_headers
+        if @request_context.features&.include?(:conditional_requests)
+          ConditionalRequest.new(
+            request_path: uri.path, store: @request_context.store
+          ).headers
+        else
+          {}
+        end
       end
 
       def build_request

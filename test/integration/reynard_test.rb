@@ -37,6 +37,28 @@ module Integration
       end
     end
 
+    test 'fetches an object with a conditional request' do
+      request = lambda {
+        @reynard
+          .operation('fetchBook')
+          .params(id: 1)
+          .store(test_file_store)
+          .enable(:conditional_requests)
+          .execute
+      }
+      with_simple_service do
+        response = request.call
+        assert_equal '200', response.code
+        book = response.object
+        assert_kind_of Reynard::Models::Book, book
+
+        response = request.call
+        assert_equal '304', response.code
+        book = response.object
+        assert_kind_of Reynard::Models::Book, book
+      end
+    end
+
     test 'creates an object' do
       with_simple_service do
         name = 'An unexpected occurance'
