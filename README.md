@@ -354,7 +354,7 @@ Reynard.http = MyMock.new
 
 class MyMock
   def request(uri, net_http_request)
-    Net::HTTPResponse::CODE_TO_OBJ['404'].new('HTTP/1.1', '200', 'OK')
+    Net::HTTPResponse::CODE_TO_OBJ['404'].new('HTTP/1.1', '404', 'Not Found')
   end
 end
 ```
