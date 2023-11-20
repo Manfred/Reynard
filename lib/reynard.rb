@@ -30,6 +30,7 @@ class Reynard
   autoload :SerializedBody, 'reynard/serialized_body'
   autoload :Server, 'reynard/server'
   autoload :Specification, 'reynard/specification'
+  autoload :Store, 'reynard/store'
   autoload :Template, 'reynard/template'
   autoload :VERSION, 'reynard/version'
 

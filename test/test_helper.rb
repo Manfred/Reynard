@@ -6,10 +6,10 @@ FIXTURES_ROOT = "#{TEST_ROOT}/fixtures".freeze
 FILES_ROOT = "#{TEST_ROOT}/files".freeze
 SUPPORT_ROOT = "#{TEST_ROOT}/support".freeze
 LOG_ROOT = "#{GEM_ROOT}/log".freeze
+TMP_ROOT = "#{GEM_ROOT}/tmp".freeze
 
 require 'minitest/autorun'
 require 'webmock/minitest'
-require 'ostruct'
 require 'fileutils'
 require 'logger'
 
@@ -26,9 +26,11 @@ class Reynard
   class Test < Minitest::Test
     include Assertions
     include LoggerHelpers
+    include StorageHelpers
 
     def teardown
       remove_constants
+      FileUtils.rm_rf(TMP_ROOT)
     end
 
     def self.test(description, &block)
