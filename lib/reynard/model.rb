@@ -14,15 +14,14 @@ class Reynard
     end
 
     def initialize(attributes)
-      if attributes.respond_to?(:each)
+      if attributes.respond_to?(:each) && attributes.respond_to?(:keys)
         @attributes = {}
         @snake_cases = self.class.snake_cases(attributes.keys)
         self.attributes = attributes
       else
         ::Kernel.raise(
           ::ArgumentError,
-          'Models must be initialized with an enumerable object that behaves like a hash, got: ' \
-          "`#{attributes.inspect}'"
+          self.class.attributes_error_message(attributes)
         )
       end
     end
@@ -91,6 +90,12 @@ class Reynard
 
         snake_cases[snake_case] = property_name
       end
+    end
+
+    def self.attributes_error_message(attributes)
+      'Models must be intialized with an enumerable object that behaves like a Hash, got: ' \
+        "`#{attributes.inspect}'. Usually this means the schema defined in the OpenAPI " \
+        "specification doesn't fit the payload in the HTTP response."
     end
   end
 end

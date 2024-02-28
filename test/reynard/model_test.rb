@@ -19,6 +19,15 @@ class Reynard
       )
     end
 
+    test 'formats an exception message for unusuable attributes' do
+      assert_equal(
+        "Models must be intialized with an enumerable object that behaves like a Hash, got: `[]'" \
+        ". Usually this means the schema defined in the OpenAPI specification doesn't fit the " \
+        'payload in the HTTP response.',
+        Reynard::Model.attributes_error_message([])
+      )
+    end
+
     test 'returns a useful value when inspected' do
       assert_match(/#<Reynard::Model:0x.+>/, @model.inspect)
     end
