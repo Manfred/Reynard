@@ -28,6 +28,10 @@ class Reynard
       )
     end
 
+    test 'knows it is not empty' do
+      refute @model.empty?
+    end
+
     test 'returns a useful value when inspected' do
       assert_match(/#<Reynard::Model:0x.+>/, @model.inspect)
     end
@@ -96,6 +100,16 @@ class Reynard
       assert_raises(ArgumentError) { Model.new(nil) }
       assert_raises(ArgumentError) { Model.new(false) }
       assert_raises(ArgumentError) { Model.new(12) }
+    end
+  end
+
+  class EmptyModelTest < Reynard::Test
+    def setup
+      @model = Model.new({})
+    end
+
+    test 'knows it is empty' do
+      assert @model.empty?
     end
   end
 
