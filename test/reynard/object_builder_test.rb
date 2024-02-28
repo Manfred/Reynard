@@ -126,6 +126,51 @@ class Reynard
     end
   end
 
+  class BadTypeObjectBuilderTest < Reynard::Test
+    def setup
+      @inflector = Inflector.new
+    end
+
+    test 'payload contains an object instead of an array' do
+      specification = Specification.new(filename: fixture_file('openapi/titled.yml'))
+
+      operation = specification.operation('listISBN')
+      media_type = specification.media_type(operation.node, '200', 'application/json')
+      schema = specification.schema(media_type.node)
+      parsed_body = { 'message' => 'Something went wrong' }
+      exception = assert_raises(ArgumentError) do
+        Reynard::ObjectBuilder.new(
+          schema: schema,
+          inflector: @inflector,
+          parsed_body: parsed_body
+        ).call
+      end
+      assert_equal(
+        Reynard::Model.attributes_error_message(parsed_body.to_a.first),
+        exception.message
+      )
+    end
+
+    test 'payload that contains an array instead of an object' do
+      specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
+      operation = specification.operation('fetchBook')
+      media_type = specification.media_type(operation.node, '200', 'application/json')
+      schema = specification.schema(media_type.node)
+      parsed_body = []
+      exception = assert_raises(ArgumentError) do
+        Reynard::ObjectBuilder.new(
+          schema: schema,
+          inflector: @inflector,
+          parsed_body: parsed_body
+        ).call
+      end
+      assert_equal(
+        Reynard::Model.attributes_error_message(parsed_body),
+        exception.message
+      )
+    end
+  end
+
   class NestedObjectBuilderTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/nested.yml'))
