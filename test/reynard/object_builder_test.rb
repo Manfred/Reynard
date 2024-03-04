@@ -46,6 +46,92 @@ class Reynard
       assert_equal 42, book.id
       assert_equal 'Black Science', book.name
     end
+
+    test "builds a singular record with schema having no title property set" do
+      @specification = Specification.new(filename: fixture_file('openapi/no_title.yml'))
+      operation = @specification.operation('sampleChapter')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      schema = @specification.schema(media_type.node)
+      chapter = Reynard::ObjectBuilder.new(
+        schema: schema,
+        inflector: @inflector,
+        parsed_body: { number: 1, title: 'Echoes of the Void' }
+      ).call
+      assert_model_name('Schema', chapter)
+      assert_equal 1, chapter.number
+      assert_equal 'Echoes of the Void', chapter.title
+    end
+
+    test "raises a TypeError exception when building a collection with schema having no title property set for the list and its elements" do
+      @specification = Specification.new(filename: fixture_file('openapi/no_title.yml'))
+      operation = @specification.operation('listChapters')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      schema = @specification.schema(media_type.node)
+      assert_raises(
+        TypeError,
+        "no implicit conversion of Hash into Integer"
+      ) do
+        Reynard::ObjectBuilder.new(
+          schema: schema,
+          inflector: @inflector,
+          parsed_body: [{ number: 1, title: 'Echoes of the Void' }, { number: 2, title: 'The Alchemy of Shadows' }]
+        ).call
+      end
+    end
+
+    test "raises a TypeError exception when building a singular record with schema having no title property set after building a collection with schema having no $ref property set" do
+      @specification = Specification.new(filename: fixture_file('openapi/no_title.yml'))
+      operation = @specification.operation('listSubChapters')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      schema = @specification.schema(media_type.node)
+      sub_chapters = Reynard::ObjectBuilder.new(
+        schema: schema,
+        inflector: @inflector,
+        parsed_body: [{ number: 1, title: 'Whispers from the Abyss' }, { number: 2, title: 'Harmonics of the Unknown' }]
+      ).call
+      assert_model_name('Schema', sub_chapters)
+
+      operation = @specification.operation('sampleChapter')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      schema = @specification.schema(media_type.node)
+      assert_raises(
+        TypeError,
+        "no implicit conversion of Hash into Integer"
+      ) do
+        Reynard::ObjectBuilder.new(
+          schema: schema,
+          inflector: @inflector,
+          parsed_body: { number: 1, title: 'Echoes of the Void' }
+        ).call
+      end
+    end
+
+    test "raises an ArgumentError exception when building a collection after building a single record with schema having no title property set" do
+      @specification = Specification.new(filename: fixture_file('openapi/no_title.yml'))
+      operation = @specification.operation('sampleChapter')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      schema = @specification.schema(media_type.node)
+      chapter = Reynard::ObjectBuilder.new(
+        schema: schema,
+        inflector: @inflector,
+        parsed_body: { number: 1, title: 'Echoes of the Void' }
+      ).call
+      assert_model_name('Schema', chapter)
+
+      operation = @specification.operation('listSubChapters')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      schema = @specification.schema(media_type.node)
+      assert_raises(
+        ArgumentError,
+        "wrong number of arguments (given 0, expected 1)"
+      ) do
+        Reynard::ObjectBuilder.new(
+          schema: schema,
+          inflector: @inflector,
+          parsed_body: [{ number: 1, title: 'Whispers from the Abyss' }, { number: 2, title: 'Harmonics of the Unknown' }]
+        ).call
+      end
+    end
   end
 
   class ExternalObjectBuilderTest < Reynard::Test
