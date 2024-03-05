@@ -74,7 +74,6 @@ class Reynard
     test 'returns a schema for its properties' do
       schema = @schema.property_schema('id')
       assert_equal 'integer', schema.type
-      assert_equal 'Id', schema.model_name
     end
 
     test 'does not return a schema for an unknown property' do
@@ -162,25 +161,31 @@ class Reynard
     end
 
     test 'digs into its property schemas' do
+      schema = @schema.property_schema('id')
+      assert_equal 'integer', schema.type
+
       schema = @schema.property_schema('books')
       assert_equal 'array', schema.type
-      assert_equal 'Books', schema.model_name
+      assert_equal 'LibraryBooks', schema.model_name
       assert_equal %w[Library], schema.namespace
 
-      schema = schema.item_schema
-      assert_equal 'object', schema.type
-      assert_equal 'Book', schema.model_name
-      assert_equal %w[Library Books], schema.namespace
+      book_schema = schema.item_schema
+      assert_equal 'object', book_schema.type
+      assert_equal 'Book', book_schema.model_name
+      assert_equal %w[Library LibraryBooks], book_schema.namespace
 
-      schema = schema.property_schema('author')
-      assert_equal 'object', schema.type
-      assert_equal 'Author', schema.model_name
-      assert_equal %w[Library Books Book], schema.namespace
+      schema = book_schema.property_schema('id')
+      assert_equal 'integer', schema.type
+      assert_equal %w[Library LibraryBooks Book], schema.namespace
 
-      schema = schema.property_schema('name')
+      author_schema = book_schema.property_schema('author')
+      assert_equal 'object', author_schema.type
+      assert_equal 'LibraryAuthor', author_schema.model_name
+      assert_equal %w[Library LibraryBooks Book], author_schema.namespace
+
+      schema = author_schema.property_schema('name')
       assert_equal 'string', schema.type
-      assert_equal 'Name', schema.model_name
-      assert_equal %w[Library Books Book Author], schema.namespace
+      assert_equal %w[Library LibraryBooks Book LibraryAuthor], schema.namespace
     end
   end
 end

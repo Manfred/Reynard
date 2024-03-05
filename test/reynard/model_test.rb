@@ -247,7 +247,7 @@ class Reynard
     end
 
     test 'builds a model for nested resources' do
-      assert_kind_of(Reynard::Models::Author, @model.author)
+      assert_kind_of(Reynard::Models::LibraryAuthor, @model.author)
       assert_equal 'Palin', @model.author.name
     end
 

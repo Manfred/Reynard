@@ -57,7 +57,7 @@ class Reynard
         inflector: @inflector,
         parsed_body: { number: 1, title: 'Echoes of the Void' }
       ).call
-      assert_model_name('ChapterSample', chapter)
+      assert_model_name('ChapterSampleSchema', chapter)
       assert_equal 1, chapter.number
       assert_equal 'Echoes of the Void', chapter.title
     end
@@ -72,16 +72,16 @@ class Reynard
         inflector: @inflector,
         parsed_body: [{ number: 1, title: 'Echoes of the Void' }, { number: 2, title: 'The Alchemy of Shadows' }]
       ).call
-      assert_model_name('Chapters', chapters)
+      assert_model_name('ChaptersSchema', chapters)
       assert_equal 2, chapters.length
 
       chapter = chapters[0]
-      assert_model_name('Chapter', chapter)
+      assert_model_name('ChapterSchema', chapter)
       assert_equal 1, chapter.number
       assert_equal 'Echoes of the Void', chapter.title
 
       chapter = chapters[1]
-      assert_model_name('Chapter', chapter)
+      assert_model_name('ChapterSchema', chapter)
       assert_equal 2, chapter.number
       assert_equal 'The Alchemy of Shadows', chapter.title
     end
@@ -96,7 +96,7 @@ class Reynard
         inflector: @inflector,
         parsed_body: [{ number: 1, title: 'Whispers from the Abyss' }, { number: 2, title: 'Harmonics of the Unknown' }]
       ).call
-      assert_model_name('SubChapters', sub_chapters)
+      assert_model_name('SubChaptersSchema', sub_chapters)
 
       operation = @specification.operation('sampleChapter')
       media_type = @specification.media_type(operation.node, '200', 'application/json')
@@ -106,7 +106,7 @@ class Reynard
         inflector: @inflector,
         parsed_body: { number: 1, title: 'Echoes of the Void' }
       ).call
-      assert_model_name('ChapterSample', chapter)
+      assert_model_name('ChapterSampleSchema', chapter)
     end
 
     test "builds a collection after building a single record with schema having no title property set" do
@@ -119,7 +119,7 @@ class Reynard
         inflector: @inflector,
         parsed_body: { number: 1, title: 'Echoes of the Void' }
       ).call
-      assert_model_name('ChapterSample', chapter)
+      assert_model_name('ChapterSampleSchema', chapter)
 
       operation = @specification.operation('listSubChapters')
       media_type = @specification.media_type(operation.node, '200', 'application/json')
@@ -129,7 +129,7 @@ class Reynard
         inflector: @inflector,
         parsed_body: [{ number: 1, title: 'Whispers from the Abyss' }, { number: 2, title: 'Harmonics of the Unknown' }]
       ).call
-      assert_model_name('SubChapters', sub_chapters)
+      assert_model_name('SubChaptersSchema', sub_chapters)
     end
   end
 
@@ -289,9 +289,10 @@ class Reynard
       ).call
       assert_model_name('Library', library)
       assert_kind_of(Array, library.books)
+      assert_model_name('LibraryBooks', library.books)
       library.books.each do |book|
         assert_model_name('Book', book)
-        assert_model_name('Author', book.author)
+        assert_model_name('LibraryAuthor', book.author)
       end
 
       assert_equal 'Borne', library.books[1].author.name
