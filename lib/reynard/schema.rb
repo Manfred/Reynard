@@ -104,7 +104,14 @@ class Reynard
     end
 
     def node_property_name
-      node.last == 'items' ? node.at(-2).chomp('s') : node.last
+      base_name = node.at(1).delete_prefix("/")
+      if node.last == 'items'
+        node_name = node.at(-2)
+        base_name.chomp('s') + ' ' + node_name.chomp('s')
+      else
+        node_name = node.last
+        base_name + ' ' + node_name
+      end
     end
   end
 end
