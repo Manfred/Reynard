@@ -48,6 +48,20 @@ module Integration
       end
     end
 
+    test 'uploads a file' do
+      with_simple_service do
+        response = @reynard
+                   .operation('createBookCover')
+                   .multipart_form({ 'size' => 'preview', 'subject' => 'In a Nutshell', 'attachment' => '123' })
+                   .execute
+        assert_equal '200', response.code
+        book_cover = response.object
+        assert_kind_of Reynard::Models::BookCover, book_cover
+        assert_equal 'preview', book_cover.size
+        assert_equal 'In a Nutshell', book_cover.subject
+      end
+    end
+
     test 'returns an error when fetching an object fails' do
       with_simple_service do
         response = @reynard.operation('fetchBook').params(id: -1).execute

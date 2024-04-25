@@ -15,12 +15,15 @@ class SimpleService
       @books = [
         { 'id' => 1 }
       ]
+      @book_covers = []
     end
 
     def service(http_request, http_response)
       case http_request.path
       when '/books'
-        handle_collection(http_request, http_response)
+        handle_book_collection(http_request, http_response)
+      when '/books/covers'
+        handle_book_cover_collection(http_request, http_response)
       when %r{/books/(\d+)}
         handle_member(Regexp.last_match(1).to_i, http_response)
       else
@@ -30,14 +33,19 @@ class SimpleService
 
     private
 
-    def handle_collection(http_request, http_response)
+    def handle_book_collection(http_request, http_response)
       case http_request.request_method
       when 'GET'
         http_response.body = MultiJson.dump(all)
       when 'POST'
-        book = add(MultiJson.load(http_request.body))
+        book = add_book(MultiJson.load(http_request.body))
         http_response.body = MultiJson.dump(book)
       end
+    end
+
+    def handle_book_cover_collection(http_request, http_response)
+      book_cover = add_book_cover(http_request.query)
+      http_response.body = MultiJson.dump(book_cover)
     end
 
     def handle_member(id, http_response)
@@ -62,9 +70,14 @@ class SimpleService
       @books.find { |book| book['id'] == id }
     end
 
-    def add(attributes)
+    def add_book(attributes)
       @books << attributes.merge('id' => @books.map { |book| book['id'] }.max.to_i + 1)
       @books.last
+    end
+
+    def add_book_cover(attributes)
+      @book_covers << attributes.except("attachment")
+      @book_covers.last
     end
   end
 
