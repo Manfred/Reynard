@@ -10,6 +10,8 @@ servers:
 tags:
   - name: books
     description: Book operations
+  - name: book_covers
+    description: Book cover operations
 paths:
   /books:
     get:
@@ -183,6 +185,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /books/covers:
+    post:
+      summary: Create a new book cover.
+      description: Create a new book cover.
+      operationId: createBookCover
+      tags:
+        - book_covers
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CreateBookCover"
+      responses:
+        '200':
+          description: A book cover.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookCover"
+        default:
+          description: An error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Book:
@@ -202,6 +229,30 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Book"
+    CreateBookCover:
+      type: object
+      required:
+        - size
+        - subject
+        - attachment
+      properties:
+        size:
+          type: string
+        subject:
+          type: string
+        attachment:
+          type: string
+          format: binary
+    BookCover:
+      type: object
+      required:
+        - size
+        - subject
+      properties:
+        size:
+          type: string
+        subject:
+          type: string
     Error:
       type: object
       required:
