@@ -39,6 +39,13 @@ class Reynard
       )
     end
 
+    def multipart_form(data)
+      copy(
+        headers: @request_context.headers,
+        form_data: data.map { |key, value| [key.to_s, value] }
+      )
+    end
+
     def headers(headers)
       copy(headers: @request_context.headers.merge(headers))
     end

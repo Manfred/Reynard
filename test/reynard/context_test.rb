@@ -115,6 +115,17 @@ class Reynard
       assert_equal 'Howdy', response.object.name
     end
 
+    test 'executes a POST request with a multipart form' do
+      stub_request(:post, 'http://example.com/v1/books/covers').and_return(body: '{"id":1,"name":"Howdy"}')
+      response = @context
+                 .operation('createBookCover')
+                 .multipart_form(name: 'Howdy')
+                 .execute
+      assert_equal '200', response.code
+      assert_equal 1, response.object.id
+      assert_equal 'Howdy', response.object.name
+    end
+
     test 'executes a PUT request with a body' do
       stub_request(:put, 'http://example.com/v1/books/56').and_return(body: '{"id":1,"name":"Howdy"}')
       response = @context.operation('updateBook').params(id: 56).body(name: 'Howdy').execute
