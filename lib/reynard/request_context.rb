@@ -9,6 +9,7 @@ class Reynard
     :headers,
     :params,
     :body,
+    :form_data,
     keyword_init: true
   ) do
     def verb

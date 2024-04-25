@@ -106,7 +106,8 @@ class Reynard
         operation: @specification.operation('fetchBook'),
         headers: { 'Accept' => 'application/json' },
         params: { 'path' => { 'id' => 12 }, 'query' => { 'format' => 'csv' } },
-        body: '{}'
+        body: '{}',
+        form_data: '{}'
       }
       copy = @request_context.copy(**properties)
       properties.each do |name, value|
