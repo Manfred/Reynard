@@ -66,6 +66,15 @@ response = reynard.
   execute
 ```
 
+When an operation requires `multipart/form-data` content, you can add it as structured data. It will be added as form data automatically.
+
+```ruby
+response = reynard.
+  operation('createEmployee').
+  multipart_form(size: 'large', attachment: attachment).
+  execute
+```
+
 The response object shares much of its interface with `Net::HTTP::Response`.
 
 ```ruby
