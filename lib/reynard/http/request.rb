@@ -34,6 +34,9 @@ class Reynard
         if @request_context.body
           @request_context.logger&.debug { @request_context.body }
           request.body = @request_context.body
+        elsif @request_context.form_data
+          @request_context.logger&.debug { @request_context.form_data }
+          request.set_form @request_context.form_data, 'multipart/form-data'
         end
         request
       end
