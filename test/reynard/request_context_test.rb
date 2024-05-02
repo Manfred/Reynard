@@ -113,5 +113,9 @@ class Reynard
         assert_equal value, copy.send(name)
       end
     end
+
+    test 'does not have any serializers when none are set' do
+      assert_nil @request_context.serializers
+    end
   end
 end
