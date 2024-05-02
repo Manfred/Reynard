@@ -23,6 +23,7 @@ class Reynard
   autoload :MediaType, 'reynard/media_type'
   autoload :Model, 'reynard/model'
   autoload :Models, 'reynard/models'
+  autoload :Naming, 'reynard/naming'
   autoload :ObjectBuilder, 'reynard/object_builder'
   autoload :Operation, 'reynard/operation'
   autoload :RequestContext, 'reynard/request_context'
