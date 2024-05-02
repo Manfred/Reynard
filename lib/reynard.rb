@@ -30,6 +30,7 @@ class Reynard
   autoload :RequestContext, 'reynard/request_context'
   autoload :Schema, 'reynard/schema'
   autoload :SerializedBody, 'reynard/serialized_body'
+  autoload :SerializerSelection, 'reynard/serializer_selection'
   autoload :Server, 'reynard/server'
   autoload :Specification, 'reynard/specification'
   autoload :Template, 'reynard/template'

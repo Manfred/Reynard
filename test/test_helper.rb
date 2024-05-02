@@ -5,6 +5,7 @@ TEST_ROOT = __dir__
 FIXTURES_ROOT = "#{TEST_ROOT}/fixtures".freeze
 FILES_ROOT = "#{TEST_ROOT}/files".freeze
 SUPPORT_ROOT = "#{TEST_ROOT}/support".freeze
+MOCKS_ROOT = "#{TEST_ROOT}/mocks".freeze
 
 require 'minitest/autorun'
 require 'webmock/minitest'
@@ -19,6 +20,11 @@ def load_support
   Dir[File.join(SUPPORT_ROOT, '**/*.rb')].each { |file| require file }
 end
 load_support
+
+def load_mocks
+  Dir[File.join(MOCKS_ROOT, '**/*.rb')].each { |file| require file }
+end
+load_mocks
 
 class Reynard
   class Test < Minitest::Test
