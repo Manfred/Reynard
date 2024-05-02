@@ -15,6 +15,7 @@ class Reynard
   def_delegators :@specification, :servers
   def_delegators :@inflector, :snake_cases
 
+  autoload :Content, 'reynard/content'
   autoload :Context, 'reynard/context'
   autoload :External, 'reynard/external'
   autoload :GroupedParameters, 'reynard/grouped_parameters'
