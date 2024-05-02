@@ -8,23 +8,28 @@ class Reynard
     extend Forwardable
     def_delegators :@request_context, :verb, :path, :full_path, :url
 
-    def initialize(specification:, inflector:, request_context: nil)
+    def initialize(specification:, inflector:, request_context: nil, response_context: nil)
       @specification = specification
       @inflector = inflector
       @request_context = request_context || build_request_context
+      @response_context = response_context || build_response_context
     end
 
     def base_url(base_url)
-      copy(base_url: base_url)
+      copy(request: { base_url: base_url })
     end
 
     def operation(operation_name)
-      copy(operation: @specification.operation(operation_name))
+      copy(request: { operation: @specification.operation(operation_name) })
     end
 
     def params(params)
       params = params.transform_keys(&:to_s)
-      copy(params: @specification.build_grouped_params(@request_context.operation.node, params))
+      copy(
+        request: {
+          params: @specification.build_grouped_params(@request_context.operation.node, params)
+        }
+      )
     end
 
     def body(data)
@@ -34,17 +39,22 @@ class Reynard
       return unless serialized_body
 
       copy(
-        headers: @request_context.headers.merge(serialized_body.headers),
-        body: serialized_body.to_s
+        request: {
+          headers: @request_context.headers.merge(serialized_body.headers),
+          body: serialized_body.to_s
+        }
       )
     end
 
     def headers(headers)
-      copy(headers: @request_context.headers.merge(headers))
+      copy(request: { headers: @request_context.headers.merge(headers) })
     end
 
     def logger(logger)
-      copy(logger: logger)
+      copy(
+        request: { logger: logger },
+        response: { logger: logger }
+      )
     end
 
     def execute
@@ -57,11 +67,16 @@ class Reynard
       RequestContext.new(base_url: @specification.default_base_url, headers: {})
     end
 
-    def copy(**properties)
+    def build_response_context
+      ResponseContext.new
+    end
+
+    def copy(request: {}, response: {})
       self.class.new(
         specification: @specification,
         inflector: @inflector,
-        request_context: @request_context.copy(**properties)
+        request_context: @request_context.copy(**request),
+        response_context: @request_context.copy(**response)
       )
     end
 

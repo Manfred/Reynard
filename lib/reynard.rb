@@ -26,6 +26,7 @@ class Reynard
   autoload :Naming, 'reynard/naming'
   autoload :ObjectBuilder, 'reynard/object_builder'
   autoload :Operation, 'reynard/operation'
+  autoload :ResponseContext, 'reynard/response_context'
   autoload :RequestContext, 'reynard/request_context'
   autoload :Schema, 'reynard/schema'
   autoload :SerializedBody, 'reynard/serialized_body'
