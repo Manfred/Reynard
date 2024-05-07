@@ -54,6 +54,15 @@ class Reynard
     "Reynard/#{Reynard::VERSION}"
   end
 
+  # Returns supported request body serializers as a Hash-like object keyed on the content-type.
+  def self.serializers
+    {
+      'application/json' => Reynard::Serializers::ApplicationJson,
+      'multipart/form-data' => Reynard::Serializers::MultipartFormData,
+      'text/plain' => Reynard::Serializers::TextPlain
+    }.freeze
+  end
+
   # Returns Reynard's global request interface. This is a global object to allow persistent
   # connections, caching, and other features that need a persistent object in the process.
   def self.http
