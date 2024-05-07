@@ -85,6 +85,25 @@ class Reynard
       assert_equal '{}', body.to_s
     end
 
+    test 'returns the content defined for an operation' do
+      operation = @specification.operation('createBook')
+      content = @specification.content(operation.node)
+      assert_equal(
+        %w[
+          application/json
+          multipart/form-data
+          text/plain
+        ],
+        content.keys.sort
+      )
+    end
+
+    test 'does not return content when none is defined for an operation' do
+      operation = @specification.operation('listBooks')
+      content = @specification.content(operation.node)
+      assert_empty(content.keys)
+    end
+
     test 'finds an operation based on their operation id' do
       operation = @specification.operation('listBooks')
       assert_equal(%w[paths /books get], operation.node)

@@ -51,6 +51,10 @@ class Reynard
       SerializedBody.new(dig(*operation_node, 'requestBody', 'content'), data)
     end
 
+    def content(operation_node)
+      Content.new(keys: dig(*operation_node, 'requestBody', 'content')&.keys || [])
+    end
+
     def operation(operation_name)
       dig('paths').each do |path, operations|
         operations.slice(*VERBS).each do |verb, operation|
