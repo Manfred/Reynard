@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'ostruct'
-
 class Reynard
   # Exposes a public interface to build a request context.
   class Context

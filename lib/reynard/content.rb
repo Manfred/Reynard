@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'ostruct'
-
 class Reynard
   # Wraps the content part of a request body and helps with determining the most suitable request
   # body content-type.

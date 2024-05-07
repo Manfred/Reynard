@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'open3'
-require 'ostruct'
 
 require 'multi_json'
 require 'webrick'
