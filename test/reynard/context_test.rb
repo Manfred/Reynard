@@ -6,7 +6,11 @@ class Reynard
   class ContextTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
-      @request_context = RequestContext.new(base_url: @specification.default_base_url, headers: {})
+      @request_context = RequestContext.new(
+        base_url: @specification.default_base_url,
+        headers: {},
+        serializers: Reynard.serializers.dup
+      )
       @inflector = Inflector.new
       @context = Context.new(
         specification: @specification, inflector: @inflector, request_context: @request_context
@@ -199,12 +203,58 @@ class Reynard
       assert_equal '200', response.code
       assert_equal [1, 2, 3], response.object.map(&:id)
     end
+
+    test 'uses the first available serializer' do
+      @request_body = nil
+      stub_request(:post, 'http://example.com/v1/books').with do |request|
+        @request_body = request.body
+      end
+      data = { 'name' => 'Parcival' }
+      @context
+        .operation('createBook')
+        .body(data)
+        .execute
+      assert_equal('{"name":"Parcival"}', @request_body)
+    end
+
+    test 'allows users to post as multipart form data' do
+      @request_body = nil
+      stub_request(:post, 'http://example.com/v1/books').with do |request|
+        @request_body = request.body
+      end
+      data = { 'name' => 'Parcival' }
+      @context
+        .serializer('application/json', nil)
+        .operation('createBook')
+        .body(data)
+        .execute
+      assert_includes(@request_body, 'Content-Disposition: form-data')
+    end
+
+    test 'allows users to post as plain text' do
+      @request_body = nil
+      stub_request(:post, 'http://example.com/v1/books').with do |request|
+        @request_body = request.body
+      end
+      data = 'Name: Parcival'
+      @context
+        .serializer('application/json', nil)
+        .serializer('multipart/form-data', nil)
+        .operation('createBook')
+        .body(data)
+        .execute
+      assert_equal(data, @request_body)
+    end
   end
 
   class BareContextTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/bare.yml'))
-      @request_context = RequestContext.new(base_url: @specification.default_base_url, headers: {})
+      @request_context = RequestContext.new(
+        base_url: @specification.default_base_url,
+        headers: {},
+        serializers: {}
+      )
       @inflector = Inflector.new
       @context = Context.new(
         specification: @specification, inflector: @inflector, request_context: @request_context

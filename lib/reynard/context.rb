@@ -31,17 +31,7 @@ class Reynard
     end
 
     def body(data)
-      return unless @request_context.operation
-
-      serialized_body = @specification.build_body(@request_context.operation.node, data)
-      return unless serialized_body
-
-      copy(
-        request: {
-          headers: @request_context.headers.merge(serialized_body.headers),
-          body: serialized_body.to_s
-        }
-      )
+      copy(request: { body: self.class.merge_body(@request_context.body, data) })
     end
 
     def headers(headers)
@@ -55,14 +45,41 @@ class Reynard
       )
     end
 
+    def serializer(content_type, serializer)
+      copy(
+        request: {
+          serializers: @request_context.serializers.merge({ content_type => serializer }).compact
+        }
+      )
+    end
+
     def execute
       build_response(build_request.perform)
+    end
+
+    def self.merge_body(current, data)
+      case current
+      when NilClass
+        data
+      when Hash
+        current.merge(data)
+      else
+        raise(
+          ArgumentError,
+          "Please assign the request body once, we can't merge #{data.inspect} into " \
+          "#{current.inspect}."
+        )
+      end
     end
 
     private
 
     def build_request_context
-      RequestContext.new(base_url: @specification.default_base_url, headers: {})
+      RequestContext.new(
+        base_url: @specification.default_base_url,
+        headers: {},
+        serializers: Reynard.serializers.dup
+      )
     end
 
     def build_response_context
@@ -79,7 +96,16 @@ class Reynard
     end
 
     def build_request
-      Reynard::Http::Request.new(request_context: @request_context)
+      Reynard::Http::Request.new(
+        request_context: @request_context,
+        serializer_selection: serializer_selection
+      )
+    end
+
+    def serializer_selection
+      @specification
+        .content(@request_context.operation.node)
+        .pick_serializer(@request_context.serializers)
     end
 
     def build_response(http_response)
