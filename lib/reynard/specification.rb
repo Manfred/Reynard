@@ -45,12 +45,6 @@ class Reynard
       ).to_h
     end
 
-    # Returns a serialized body instance to serialize a request body and figure out the request
-    # headers.
-    def build_body(operation_node, data)
-      SerializedBody.new(dig(*operation_node, 'requestBody', 'content'), data)
-    end
-
     def content(operation_node)
       Content.new(keys: dig(*operation_node, 'requestBody', 'content')&.keys || [])
     end

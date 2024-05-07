@@ -71,20 +71,6 @@ class Reynard
       )
     end
 
-    test 'serializes body for an operation with a request body' do
-      operation = @specification.operation('createBook')
-      body = @specification.build_body(operation.node, {})
-      assert_equal 'application/json', body.content_type
-      assert_equal '{}', body.to_s
-    end
-
-    test 'serializes body with default serialization for an operation without a request body' do
-      operation = @specification.operation('createBook')
-      body = @specification.build_body(operation.node, {})
-      assert_equal 'application/json', body.content_type
-      assert_equal '{}', body.to_s
-    end
-
     test 'returns the content defined for an operation' do
       operation = @specification.operation('createBook')
       content = @specification.content(operation.node)
