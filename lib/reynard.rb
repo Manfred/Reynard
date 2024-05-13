@@ -29,6 +29,7 @@ class Reynard
   autoload :Operation, 'reynard/operation'
   autoload :ResponseContext, 'reynard/response_context'
   autoload :RequestContext, 'reynard/request_context'
+  autoload :Serializers, 'reynard/serializers'
   autoload :Schema, 'reynard/schema'
   autoload :SerializerSelection, 'reynard/serializer_selection'
   autoload :Server, 'reynard/server'
