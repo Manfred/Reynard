@@ -16,7 +16,7 @@ class SimpleService
       ]
     end
 
-    def service(http_request, http_response)
+    def service(http_request, http_response) # rubocop:disable Metrics/MethodLength
       case http_request.path
       when '/books'
         handle_collection(http_request, http_response)
@@ -25,6 +25,13 @@ class SimpleService
       else
         respond_with_not_found(http_response)
       end
+    rescue Exception => e # rubocop:disable Lint/RescueException
+      respond_with_internal_server_error(
+        http_response,
+        e.class.to_s,
+        e.message,
+        e.backtrace
+      )
     end
 
     private
@@ -34,8 +41,17 @@ class SimpleService
       when 'GET'
         http_response.body = MultiJson.dump(all)
       when 'POST'
-        book = add(MultiJson.load(http_request.body))
+        book = add(parse_book(http_request))
         http_response.body = MultiJson.dump(book)
+      end
+    end
+
+    def parse_book(http_request)
+      case http_request['Content-Type']
+      when %r{^multipart/form-data}
+        http_request.query
+      else
+        MultiJson.load(http_request.body)
       end
     end
 
@@ -51,6 +67,13 @@ class SimpleService
     def respond_with_not_found(http_response)
       http_response.status = 404
       http_response.body = MultiJson.dump('error' => 'not_found')
+    end
+
+    def respond_with_internal_server_error(http_response, error, message, backtrace)
+      http_response.status = 500
+      http_response.body = MultiJson.dump(
+        'error' => error, 'message' => message, 'backtrace' => backtrace
+      )
     end
 
     def all

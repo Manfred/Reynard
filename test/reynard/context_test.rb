@@ -218,17 +218,17 @@ class Reynard
     end
 
     test 'allows users to post as multipart form data' do
-      @request_body = nil
-      stub_request(:post, 'http://example.com/v1/books').with do |request|
-        @request_body = request.body
-      end
+      # Net/HTTP writes the multipart body directly to the socket instead of throught the body
+      # accessor of the request object so it's not accessible through WebMock.
+      stub_request(:post, 'http://example.com/v1/books')
       data = { 'name' => 'Parcival' }
-      @context
+      response =
+        @context
         .serializer('application/json', nil)
         .operation('createBook')
         .body(data)
         .execute
-      assert_includes(@request_body, 'Content-Disposition: form-data')
+      assert response.success?
     end
 
     test 'allows users to post as plain text' do

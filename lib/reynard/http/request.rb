@@ -7,6 +7,8 @@ class Reynard
   class Http
     # Configures and performs an HTTP request.
     class Request
+      MULTIPART_FORM_DATA = 'multipart/form-data'
+
       attr_reader :uri
 
       def initialize(request_context:, serializer_selection:)
@@ -36,7 +38,13 @@ class Reynard
 
       def build_request
         request = request_class.new(uri, request_headers)
-        if serializer
+        if @serializer_selection&.content_type == MULTIPART_FORM_DATA
+          request.set_form(
+            serializer.data,
+            serializer.mime_type,
+            boundary: serializer.multipart_boundary
+          )
+        elsif serializer
           write_serializer_body(request)
         elsif @request_context.body
           write_serializer_params(request)
