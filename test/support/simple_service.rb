@@ -17,6 +17,7 @@ class SimpleService
     end
 
     def service(http_request, http_response) # rubocop:disable Metrics/MethodLength
+      http_response['Content-Type'] = 'application/json'
       case http_request.path
       when '/books'
         handle_collection(http_request, http_response)
