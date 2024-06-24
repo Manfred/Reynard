@@ -53,6 +53,16 @@ class Reynard
       )
     end
 
+    def deserializer(content_type, deserializer)
+      copy(
+        response: {
+          deserializers: @response_context.deserializers.merge(
+            { content_type => deserializer }
+          ).compact
+        }
+      )
+    end
+
     def execute
       build_response(build_request.perform)
     end
@@ -83,7 +93,9 @@ class Reynard
     end
 
     def build_response_context
-      ResponseContext.new
+      ResponseContext.new(
+        deserializers: Reynard.deserializers.dup
+      )
     end
 
     def copy(request: {}, response: {})
@@ -91,7 +103,7 @@ class Reynard
         specification: @specification,
         inflector: @inflector,
         request_context: @request_context.copy(**request),
-        response_context: @request_context.copy(**response)
+        response_context: @response_context.copy(**response)
       )
     end
 
@@ -113,6 +125,7 @@ class Reynard
         specification: @specification,
         inflector: @inflector,
         request_context: @request_context,
+        response_context: @response_context,
         http_response: http_response
       )
     end
