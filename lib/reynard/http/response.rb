@@ -8,10 +8,13 @@ class Reynard
       extend Forwardable
       def_delegators :@http_response, :code, :content_type, :[], :body
 
-      def initialize(specification:, inflector:, request_context:, http_response:)
+      def initialize(
+        specification:, inflector:, request_context:, response_context:, http_response:
+      )
         @specification = specification
         @inflector = inflector
         @request_context = request_context
+        @response_context = response_context
         @http_response = http_response
       end
 
@@ -44,7 +47,10 @@ class Reynard
       def parsed_body
         return @parsed_body if defined?(@parsed_body)
 
-        @parsed_body = MultiJson.load(@http_response.body)
+        @parsed_body = deserializer_class.new(
+          headers: @http_response,
+          body: @http_response.body
+        ).call
       end
 
       # Instantiates an object based on the schema that fits the response.
@@ -55,6 +61,22 @@ class Reynard
       end
 
       private
+
+      def deserializer_class
+        @deserializer_class ||= pick_deserializer
+      end
+
+      def pick_deserializer
+        mime_type = @http_response.content_type.to_s.split(';', 2)[0]
+        if @response_context.deserializers.key?(mime_type)
+          @response_context.deserializers.fetch(mime_type)
+        else
+          raise(
+            KeyError,
+            "No registered deserializer for the response mime type `#{mime_type}'."
+          )
+        end
+      end
 
       def build_object
         media_type = @specification.media_type(

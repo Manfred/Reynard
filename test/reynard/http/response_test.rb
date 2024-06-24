@@ -15,13 +15,16 @@ class Reynard
           headers: {},
           operation: @specification.operation('sampleBook')
         )
+        @response_context = ResponseContext.new(
+          deserializers: Reynard.deserializers.dup
+        )
         @body = '{"id":12}'
       end
 
-      def response(code, message)
+      def response(code, message, content_type: 'application/json')
         response_class = Net::HTTPResponse::CODE_TO_OBJ[code]
         @http_response = response_class.new('HTTP/1.1', code, message)
-        @http_response['Content-Type'] = 'application/json'
+        @http_response['Content-Type'] = content_type
         @http_response['X-Sample'] = '👋'
         @http_response.instance_variable_set('@read', true)
         @http_response.instance_variable_set('@body', @body)
@@ -30,6 +33,7 @@ class Reynard
           specification: @specification,
           inflector: @inflector,
           request_context: @request_context,
+          response_context: @response_context,
           http_response: @http_response
         )
       end
@@ -42,9 +46,18 @@ class Reynard
         assert_equal @body, response.body
       end
 
-      test 'returns the parse body' do
+      test 'returns the parsed body' do
         response = response('200', 'OK')
         assert_equal({ 'id' => 12 }, response.parsed_body)
+      end
+
+      test 'raises an exception when there is no deserializer for content-type' do
+        response = response('200', 'OK', content_type: 'text/unknown')
+        exception = assert_raises(KeyError) { response.parsed_body }
+        assert_equal(
+          "No registered deserializer for the response mime type `text/unknown'.",
+          exception.message
+        )
       end
 
       test 'builds a response object' do
