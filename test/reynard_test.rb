@@ -97,6 +97,7 @@ class ReynardTest < Reynard::Test
   class Mock
     def request(_uri, _request)
       response = Net::HTTPResponse::CODE_TO_OBJ['404'].new('HTTP/1.1', '400', 'Not Found')
+      response['Content-Type'] = 'application/json'
       response.instance_variable_set('@read', true)
       response.instance_variable_set('@body', '{"code":404,"message":"Not Found"}')
       response
