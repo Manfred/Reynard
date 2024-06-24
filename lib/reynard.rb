@@ -17,6 +17,7 @@ class Reynard
 
   autoload :Content, 'reynard/content'
   autoload :Context, 'reynard/context'
+  autoload :Deserializers, 'reynard/deserializers'
   autoload :External, 'reynard/external'
   autoload :GroupedParameters, 'reynard/grouped_parameters'
   autoload :Http, 'reynard/http'
