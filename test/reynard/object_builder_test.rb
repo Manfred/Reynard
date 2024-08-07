@@ -14,7 +14,7 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       books = Reynard::ObjectBuilder.new(
-        schema: schema,
+        schema:,
         inflector: @inflector,
         parsed_body: [{ id: 42, name: 'Black Science' }, { id: 51, name: 'Dead Astronauts' }]
       ).call
@@ -38,7 +38,7 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       book = Reynard::ObjectBuilder.new(
-        schema: schema,
+        schema:,
         inflector: @inflector,
         parsed_body: { id: 42, name: 'Black Science' }
       ).call
@@ -59,7 +59,7 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       author = Reynard::ObjectBuilder.new(
-        schema: schema,
+        schema:,
         inflector: @inflector,
         parsed_body: {
           id: 42, name: 'Jerry Writer', bio: { age: 42 }
@@ -83,7 +83,7 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       collection = Reynard::ObjectBuilder.new(
-        schema: schema,
+        schema:,
         inflector: @inflector,
         parsed_body: [
           {
@@ -117,7 +117,7 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       record = Reynard::ObjectBuilder.new(
-        schema: schema,
+        schema:,
         inflector: @inflector,
         parsed_body: { name: '😇' }
       ).call
@@ -140,9 +140,9 @@ class Reynard
       parsed_body = { 'message' => 'Something went wrong' }
       exception = assert_raises(ArgumentError) do
         Reynard::ObjectBuilder.new(
-          schema: schema,
+          schema:,
           inflector: @inflector,
-          parsed_body: parsed_body
+          parsed_body:
         ).call
       end
       assert_equal(
@@ -159,9 +159,9 @@ class Reynard
       parsed_body = []
       exception = assert_raises(ArgumentError) do
         Reynard::ObjectBuilder.new(
-          schema: schema,
+          schema:,
           inflector: @inflector,
-          parsed_body: parsed_body
+          parsed_body:
         ).call
       end
       assert_equal(
@@ -198,9 +198,9 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       library = Reynard::ObjectBuilder.new(
-        schema: schema,
+        schema:,
         inflector: @inflector,
-        parsed_body: parsed_body
+        parsed_body:
       ).call
       assert_model_name('Library', library)
       assert_kind_of(Array, library.books)
@@ -224,7 +224,7 @@ class Reynard
       media_type = @specification.media_type(operation.node, '200', 'application/json')
       schema = @specification.schema(media_type.node)
       record = Reynard::ObjectBuilder.new(
-        schema: schema,
+        schema:,
         inflector: @inflector,
         parsed_body: [
           {
