@@ -73,7 +73,7 @@ class Reynard
         ObjectBuilder.new(
           schema: @specification.schema(media_type.node),
           inflector: @inflector,
-          parsed_body: parsed_body
+          parsed_body:
         ).call
       end
 
