@@ -81,7 +81,7 @@ class Reynard
     end
 
     test 'formats a model name and namespace' do
-      assert_equal 'Books', @schema.model_name
+      assert_equal 'BooksCollection', @schema.model_name
       assert_nil @schema.namespace
     end
 
@@ -135,23 +135,23 @@ class Reynard
     test 'digs into its property schemas' do
       schema = @schema.property_schema('books')
       assert_equal 'array', schema.type
-      assert_equal 'Books', schema.model_name
+      assert_equal 'BooksCollection', schema.model_name
       assert_equal %w[Library], schema.namespace
 
       schema = schema.item_schema
       assert_equal 'object', schema.type
       assert_equal 'Book', schema.model_name
-      assert_equal %w[Library Books], schema.namespace
+      assert_equal %w[Library BooksCollection], schema.namespace
 
       schema = schema.property_schema('author')
       assert_equal 'object', schema.type
       assert_equal 'Author', schema.model_name
-      assert_equal %w[Library Books Book], schema.namespace
+      assert_equal %w[Library BooksCollection Book], schema.namespace
 
       schema = schema.property_schema('name')
       assert_equal 'string', schema.type
       assert_equal 'Name', schema.model_name
-      assert_equal %w[Library Books Book Author], schema.namespace
+      assert_equal %w[Library BooksCollection Book Author], schema.namespace
     end
   end
 end
