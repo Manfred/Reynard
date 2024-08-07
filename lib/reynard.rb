@@ -11,23 +11,42 @@ require 'uri'
 # OpenAPI specification.
 class Reynard
   extend Forwardable
-  def_delegators :build_context, :logger, :base_url, :operation, :headers, :params
+  def_delegators(
+    :build_context,
+    :base_url,
+    :operation,
+    :params,
+    :body,
+    :headers,
+    :logger,
+    :serializer,
+    :deserializer,
+    :property_naming,
+    :model_registry,
+    :model_naming
+  )
   def_delegators :@specification, :servers
-  def_delegators :@inflector, :snake_cases
 
+  autoload :ClassBuilder, 'reynard/class_builder'
+  autoload :Collection, 'reynard/collection'
+  autoload :Content, 'reynard/content'
   autoload :Context, 'reynard/context'
+  autoload :Deserializers, 'reynard/deserializers'
   autoload :External, 'reynard/external'
   autoload :GroupedParameters, 'reynard/grouped_parameters'
   autoload :Http, 'reynard/http'
-  autoload :Inflector, 'reynard/inflector'
   autoload :MediaType, 'reynard/media_type'
   autoload :Model, 'reynard/model'
   autoload :Models, 'reynard/models'
+  autoload :Naming, 'reynard/naming'
   autoload :ObjectBuilder, 'reynard/object_builder'
   autoload :Operation, 'reynard/operation'
+  autoload :Property, 'reynard/property'
+  autoload :ResponseContext, 'reynard/response_context'
   autoload :RequestContext, 'reynard/request_context'
+  autoload :Serializers, 'reynard/serializers'
   autoload :Schema, 'reynard/schema'
-  autoload :SerializedBody, 'reynard/serialized_body'
+  autoload :SerializerSelection, 'reynard/serializer_selection'
   autoload :Server, 'reynard/server'
   autoload :Specification, 'reynard/specification'
   autoload :Template, 'reynard/template'
@@ -35,19 +54,50 @@ class Reynard
 
   def initialize(filename:)
     @specification = Specification.new(filename: filename)
-    @inflector = Inflector.new
   end
 
   class << self
     # Assign an object that follows Reynard's internal request interface to mock requests or use a
     # different HTTP client.
     attr_writer :http
+    # Assign a model registry instance that will be used by every response context.
+    attr_writer :model_registry
+    # Assign a model naming class that will be used by every response context.
+    attr_writer :model_naming
   end
 
   # Returns a value that will be used by default for Reynard's User-Agent headers. Please use
   # the +headers+ setter on the context if you want to change this.
   def self.user_agent
     "Reynard/#{Reynard::VERSION}"
+  end
+
+  # Returns supported request body serializers as a Hash-like object keyed on the content-type.
+  def self.serializers
+    {
+      'application/json' => Reynard::Serializers::ApplicationJson,
+      'multipart/form-data' => Reynard::Serializers::MultipartFormData,
+      'text/plain' => Reynard::Serializers::TextPlain
+    }.freeze
+  end
+
+  # Returns supported response body deserializers as a Hash-like object keyed on the content-type.
+  def self.deserializers
+    {
+      'application/json' => Reynard::Deserializers::ApplicationJson
+    }.freeze
+  end
+
+  def self.model_registry
+    @model_registry ||= Reynard::Naming::ModelRegistry.new
+  end
+
+  def self.model_naming
+    @model_naming || Reynard::Naming::NodeModelNaming
+  end
+
+  def self.property_naming
+    @property_naming || Reynard::Naming::PropertyNaming.new
   end
 
   # Returns Reynard's global request interface. This is a global object to allow persistent
@@ -63,6 +113,6 @@ class Reynard
   private
 
   def build_context
-    Context.new(specification: @specification, inflector: @inflector)
+    Context.new(specification: @specification)
   end
 end

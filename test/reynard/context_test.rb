@@ -6,10 +6,13 @@ class Reynard
   class ContextTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
-      @request_context = RequestContext.new(base_url: @specification.default_base_url, headers: {})
-      @inflector = Inflector.new
+      @request_context = RequestContext.new(
+        base_url: @specification.default_base_url,
+        headers: {},
+        serializers: Reynard.serializers.dup
+      )
       @context = Context.new(
-        specification: @specification, inflector: @inflector, request_context: @request_context
+        specification: @specification, request_context: @request_context
       )
     end
 
@@ -74,6 +77,7 @@ class Reynard
 
     test 'executes a request for a collection' do
       stub_request(:get, 'http://example.com/v1/books').and_return(
+        headers: { 'Content-Type' => 'application/json' },
         body: '[{"id":1},{"id":2},{"id":3}]'
       )
       response = @context.operation('listBooks').execute
@@ -82,14 +86,20 @@ class Reynard
     end
 
     test 'executes a request for a single resource' do
-      stub_request(:get, 'http://example.com/v1/books/1').and_return(body: '{"id":1}')
+      stub_request(:get, 'http://example.com/v1/books/1').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1}'
+      )
       response = @context.operation('fetchBook').params(id: 1).execute
       assert_equal '200', response.code
       assert_equal 1, response.object.id
     end
 
     test 'executes a request for a single resource with a specific content-type' do
-      stub_request(:get, 'http://example.com/v1/books/1').and_return(body: '{"id":1}')
+      stub_request(:get, 'http://example.com/v1/books/1').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1}'
+      )
       response = @context
                  .operation('fetchBook')
                  .headers('Accept' => 'application/json')
@@ -100,7 +110,10 @@ class Reynard
     end
 
     test 'executes a POST request with a body' do
-      stub_request(:post, 'http://example.com/v1/books').and_return(body: '{"id":1,"name":"Howdy"}')
+      stub_request(:post, 'http://example.com/v1/books').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1,"name":"Howdy"}'
+      )
       response = @context.operation('createBook').body(name: 'Howdy').execute
       assert_equal '200', response.code
       assert_equal 1, response.object.id
@@ -108,7 +121,10 @@ class Reynard
     end
 
     test 'executes a POST request without a body' do
-      stub_request(:post, 'http://example.com/v1/books').and_return(body: '{"id":1,"name":"Howdy"}')
+      stub_request(:post, 'http://example.com/v1/books').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1,"name":"Howdy"}'
+      )
       response = @context.operation('createBook').execute
       assert_equal '200', response.code
       assert_equal 1, response.object.id
@@ -116,7 +132,10 @@ class Reynard
     end
 
     test 'executes a PUT request with a body' do
-      stub_request(:put, 'http://example.com/v1/books/56').and_return(body: '{"id":1,"name":"Howdy"}')
+      stub_request(:put, 'http://example.com/v1/books/56').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1,"name":"Howdy"}'
+      )
       response = @context.operation('updateBook').params(id: 56).body(name: 'Howdy').execute
       assert_equal '200', response.code
       assert_equal 1, response.object.id
@@ -124,7 +143,10 @@ class Reynard
     end
 
     test 'executes a PUT request without a body' do
-      stub_request(:put, 'http://example.com/v1/books/83').and_return(body: '{"id":1,"name":"Howdy"}')
+      stub_request(:put, 'http://example.com/v1/books/83').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1,"name":"Howdy"}'
+      )
       response = @context.operation('updateBook').params(id: 83).execute
       assert_equal '200', response.code
       assert_equal 1, response.object.id
@@ -132,7 +154,10 @@ class Reynard
     end
 
     test 'executes a PATCH request with a body' do
-      stub_request(:patch, 'http://example.com/v1/books/12').and_return(body: '{"id":1,"name":"Howdy"}')
+      stub_request(:patch, 'http://example.com/v1/books/12').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1,"name":"Howdy"}'
+      )
       response = @context.operation('updateBook2').params(id: 12).body(name: 'Howdy').execute
       assert_equal '200', response.code
       assert_equal 1, response.object.id
@@ -140,7 +165,10 @@ class Reynard
     end
 
     test 'executes a PATCH request without a body' do
-      stub_request(:patch, 'http://example.com/v1/books/93').and_return(body: '{"id":1,"name":"Howdy"}')
+      stub_request(:patch, 'http://example.com/v1/books/93').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1,"name":"Howdy"}'
+      )
       response = @context.operation('updateBook2').params(id: 93).execute
       assert_equal '200', response.code
       assert_equal 1, response.object.id
@@ -158,7 +186,10 @@ class Reynard
       out = StringIO.new
       logger = ::Logger.new(out)
       logger.level = ::Logger::DEBUG
-      stub_request(:post, 'http://example.com/v1/books').and_return(body: '{"id":1,"name":"Howdy"}')
+      stub_request(:post, 'http://example.com/v1/books').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1,"name":"Howdy"}'
+      )
       @context.logger(logger).operation('createBook').body({}).execute
       lines = out.string.split("\n")
       assert_equal 2, lines.length
@@ -181,6 +212,7 @@ class Reynard
       stub_request(:get, 'http://example.com/v1/books').with(
         headers: { 'User-Agent' => Reynard.user_agent.to_s }
       ).and_return(
+        headers: { 'Content-Type' => 'application/json' },
         body: '[{"id":1},{"id":2},{"id":3}]'
       )
       response = @context.operation('listBooks').execute
@@ -193,27 +225,131 @@ class Reynard
       stub_request(:get, 'http://example.com/v1/books').with(
         headers: { 'User-Agent' => user_agent }
       ).and_return(
+        headers: { 'Content-Type' => 'application/json' },
         body: '[{"id":1},{"id":2},{"id":3}]'
       )
       response = @context.headers({ 'User-Agent' => user_agent }).operation('listBooks').execute
       assert_equal '200', response.code
       assert_equal [1, 2, 3], response.object.map(&:id)
     end
+
+    test 'uses the first available serializer' do
+      @request_body = nil
+      stub_request(:post, 'http://example.com/v1/books').with do |request|
+        @request_body = request.body
+      end
+      data = { 'name' => 'Parcival' }
+      @context
+        .operation('createBook')
+        .body(data)
+        .execute
+      assert_equal('{"name":"Parcival"}', @request_body)
+    end
+
+    test 'allows users to post as multipart form data' do
+      # Net/HTTP writes the multipart body directly to the socket instead of throught the body
+      # accessor of the request object so it's not accessible through WebMock.
+      stub_request(:post, 'http://example.com/v1/books')
+      data = { 'name' => 'Parcival' }
+      response =
+        @context
+        .serializer('application/json', nil)
+        .operation('createBook')
+        .body(data)
+        .execute
+      assert response.success?
+    end
+
+    test 'allows users to post as plain text' do
+      @request_body = nil
+      stub_request(:post, 'http://example.com/v1/books').with do |request|
+        @request_body = request.body
+      end
+      data = 'Name: Parcival'
+      @context
+        .serializer('application/json', nil)
+        .serializer('multipart/form-data', nil)
+        .operation('createBook')
+        .body(data)
+        .execute
+      assert_equal(data, @request_body)
+    end
+
+    class Deserializer
+      def initialize(**); end
+
+      def call
+        { stub: true }
+      end
+    end
+
+    test 'uses the first available deserializer' do
+      stub_request(:get, 'http://example.com/v1/books/1').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1}'
+      )
+      response =
+        @context
+        .deserializer('application/json', Deserializer)
+        .operation('fetchBook')
+        .params(id: 1)
+        .execute
+      assert_equal({ stub: true }, response.parsed_body)
+    end
+
+    class ModelRegistry # rubocop:disable Lint/EmptyClass
+    end
+
+    test 'allows users to select a different model registry' do
+      stub_request(:get, 'http://example.com/v1/books/1').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1}'
+      )
+      @context
+        .model_registry(ModelRegistry)
+        .operation('fetchBook')
+        .params(id: 1)
+        .execute
+    end
+
+    class ModelNaming # rubocop:disable Lint/EmptyClass
+    end
+
+    test 'allows users to select a different model naming' do
+      stub_request(:get, 'http://example.com/v1/books/1').and_return(
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"id":1}'
+      )
+      @context
+        .model_registry(ModelNaming)
+        .operation('fetchBook')
+        .params(id: 1)
+        .execute
+    end
   end
 
   class BareContextTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/bare.yml'))
-      @request_context = RequestContext.new(base_url: @specification.default_base_url, headers: {})
-      @inflector = Inflector.new
+      @request_context = RequestContext.new(
+        base_url: @specification.default_base_url,
+        headers: {},
+        serializers: {}
+      )
       @context = Context.new(
-        specification: @specification, inflector: @inflector, request_context: @request_context
+        specification: @specification,
+        request_context: @request_context,
+        response_context: ResponseContext.build
       )
     end
 
     test 'returns a generic result when response is not defined' do
-      stub_request(:get, 'http://example.com/clowns').and_return(
-        status: 500, body: '{"message":"Howdy"}'
+      stub_request(
+        :get, 'http://example.com/clowns'
+      ).and_return(
+        status: 500,
+        headers: { 'Content-Type' => 'application/json' },
+        body: '{"message":"Howdy"}'
       )
       response = @context.operation('listClowns').execute
       assert_kind_of Reynard::Model, response.object
@@ -221,26 +357,39 @@ class Reynard
     end
   end
 
-  class InflectorContextTest < Reynard::Test
+  class PropertyAccessorNamingContextTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/nested.yml'))
       @request_context = RequestContext.new(base_url: @specification.default_base_url, headers: {})
-      @inflector = Inflector.new
-      @inflector.snake_cases({ '1st-class' => 'first_class' })
+      @response_context = ResponseContext.new(
+        deserializers: Reynard.deserializers.dup,
+        model_registry: Reynard.model_registry,
+        model_naming: Reynard.model_naming,
+        property_naming: Reynard::Naming::PropertyNaming.new(
+          exceptions: { '1st-class' => 'first_class' }
+        )
+      )
       @context = Context.new(
-        specification: @specification, inflector: @inflector, request_context: @request_context
+        specification: @specification,
+        request_context: @request_context,
+        response_context: @response_context
       )
     end
 
     test 'allows access to irregular properties through snake case methods' do
       stub_request(:get, 'http://example.com/v1/library').and_return(
-        status: 200, body: JSON.dump(
+        status: 200,
+        headers: { 'Content-Type' => 'application/json' },
+        body: JSON.dump(
           {
             'name' => '1st Library',
             'books' => [
               {
-                'name' => 'Erebus', 'author' => {
-                  'name' => 'Palin', 'streetName' => 'Townstreet', '1st-class' => 'false'
+                'name' => 'Erebus',
+                'author' => {
+                  'name' => 'Palin',
+                  'streetName' => 'Townstreet',
+                  '1st-class' => 'false'
                 }
               }
             ]

@@ -7,11 +7,6 @@ class ReynardTest < Reynard::Test
     @reynard = Reynard.new(filename: fixture_file('openapi/simple.yml'))
   end
 
-  test 'registers additional inflection exceptions' do
-    @reynard.snake_cases({ '1st-class' => 'first_class' })
-    assert_equal 'first_class', @reynard.instance_variable_get('@inflector').snake_case('1st-class')
-  end
-
   test 'returns all available servers' do
     servers = @reynard.servers
     assert_equal 2, servers.length
@@ -89,9 +84,15 @@ class ReynardTest < Reynard::Test
     assert_equal apple[:placeholder], object.placeholder
   end
 
+  test 'returns default serializers' do
+    assert_kind_of Hash, Reynard.serializers
+    assert_includes(Reynard.serializers.keys, 'application/json')
+  end
+
   class Mock
     def request(_uri, _request)
       response = Net::HTTPResponse::CODE_TO_OBJ['404'].new('HTTP/1.1', '400', 'Not Found')
+      response['Content-Type'] = 'application/json'
       response.instance_variable_set('@read', true)
       response.instance_variable_set('@body', '{"code":404,"message":"Not Found"}')
       response

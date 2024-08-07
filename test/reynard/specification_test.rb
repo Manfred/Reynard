@@ -71,18 +71,23 @@ class Reynard
       )
     end
 
-    test 'serializes body for an operation with a request body' do
+    test 'returns the content defined for an operation' do
       operation = @specification.operation('createBook')
-      body = @specification.build_body(operation.node, {})
-      assert_equal 'application/json', body.content_type
-      assert_equal '{}', body.to_s
+      content = @specification.content(operation.node)
+      assert_equal(
+        %w[
+          application/json
+          multipart/form-data
+          text/plain
+        ],
+        content.keys.sort
+      )
     end
 
-    test 'serializes body with default serialization for an operation without a request body' do
-      operation = @specification.operation('createBook')
-      body = @specification.build_body(operation.node, {})
-      assert_equal 'application/json', body.content_type
-      assert_equal '{}', body.to_s
+    test 'does not return content when none is defined for an operation' do
+      operation = @specification.operation('listBooks')
+      content = @specification.content(operation.node)
+      assert_empty(content.keys)
     end
 
     test 'finds an operation based on their operation id' do
@@ -137,8 +142,7 @@ class Reynard
         schema.node
       )
       assert_equal('array', schema.type)
-      assert_equal('Books', schema.model_name)
-      assert_equal('Book', schema.item_schema.model_name)
+      assert_equal('object', schema.items_schema.type)
 
       operation = @specification.operation('fetchBook')
       media_type = @specification.media_type(operation.node, '200', 'application/json')
@@ -148,8 +152,7 @@ class Reynard
         schema.node
       )
       assert_equal('object', schema.type)
-      assert_equal('Book', schema.model_name)
-      assert_nil schema.item_schema
+      assert_nil schema.items_schema
     end
 
     test 'uses first response when HTTP response does not have a media type' do
@@ -161,8 +164,7 @@ class Reynard
         schema.node
       )
       assert_equal('array', schema.type)
-      assert_equal('Books', schema.model_name)
-      assert_equal('Book', schema.item_schema.model_name)
+      assert_equal('object', schema.items_schema.type)
 
       operation = @specification.operation('fetchBook')
       media_type = @specification.media_type(operation.node, '200', 'application/json')
@@ -172,8 +174,7 @@ class Reynard
         schema.node
       )
       assert_equal('object', schema.type)
-      assert_equal('Book', schema.model_name)
-      assert_nil schema.item_schema
+      assert_nil schema.items_schema
     end
   end
 

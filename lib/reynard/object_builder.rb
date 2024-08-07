@@ -1,86 +1,82 @@
 # frozen_string_literal: true
 
-require 'ostruct'
-
 class Reynard
   # Defines dynamic classes based on schema and instantiates them for a response.
   class ObjectBuilder
     attr_reader :schema, :parsed_body
 
-    def initialize(schema:, inflector:, parsed_body:, model_name: nil)
+    def initialize(schema:, response_context:, parsed_body:, namespace: nil)
       @schema = schema
-      @inflector = inflector
+      @response_context = response_context
       @parsed_body = parsed_body
-      @model_name = model_name
+      @namespace = namespace
     end
 
     def model_name
-      @model_name || @schema.model_name
+      @model_name || model_naming(schema.node).model_name
     end
 
     def model_class
       return @model_class if defined?(@model_class)
 
-      @model_class =
-        self.class.model_class_get(model_name) ||
-        self.class.model_class_set(model_name, schema, @inflector)
+      @model_class = fetch_class
     end
 
     def call
-      case schema.type
+      return unless @parsed_body
+
+      case @schema.type
       when 'object'
-        model_class.new(parsed_body)
+        model_class.new(@parsed_body, @response_context)
       when 'array'
         cast_array
       else
-        parsed_body
+        Reynard::Model.new(@parsed_body, @response_context)
       end
-    end
-
-    def self.model_class_get(model_name)
-      Kernel.const_get("::Reynard::Models::#{model_name}")
-    rescue NameError
-      nil
-    end
-
-    def self.model_class_set(model_name, schema, inflector)
-      if schema.type == 'array'
-        array_model_class_set(model_name)
-      else
-        object_model_class_set(model_name, schema, inflector)
-      end
-    end
-
-    def self.array_model_class_set(model_name)
-      return Array unless model_name
-
-      ::Reynard::Models.const_set(model_name, Class.new(Array))
-    end
-
-    def self.object_model_class_set(model_name, schema, inflector)
-      return Reynard::Model unless model_name
-
-      model_class = Class.new(Reynard::Model)
-      model_class.schema = schema
-      model_class.inflector = inflector
-      ::Reynard::Models.const_set(model_name, model_class)
     end
 
     private
 
-    def cast_array
-      return unless parsed_body
+    def model_naming(node)
+      @response_context.model_naming.new(specification: schema.specification, node: node)
+    end
 
-      item_schema = schema.item_schema
+    def fetch_class
+      model_registry_get || model_registry_set
+    end
+
+    def model_registry_get
+      @response_context.model_registry.get(model_name: model_name, namespace: @namespace)
+    end
+
+    def model_registry_set
+      @response_context.model_registry.set(
+        model_name: model_name, model: build_model_class, namespace: @namespace
+      )
+    end
+
+    def build_model_class
+      model_class = ClassBuilder.new(schema: @schema, response_context: @response_context).call
+      model_class.name = model_name if model_class.respond_to?(:name=)
+      model_class.namespace = model_namespace if model_class.respond_to?(:namespace=)
+      model_class
+    end
+
+    def cast_array
       array = model_class.new
-      parsed_body.each do |item|
-        array << self.class.new(
-          schema: item_schema,
-          inflector: @inflector,
-          parsed_body: item
+      @parsed_body.each do |parsed|
+        array << ObjectBuilder.new(
+          schema: @schema.items_schema,
+          response_context: @response_context,
+          parsed_body: parsed,
+          namespace: model_namespace
         ).call
       end
       array
+    end
+
+    def model_namespace
+      (@namespace.to_s.split('::') + [model_name]).join('::')
     end
   end
 end

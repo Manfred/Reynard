@@ -8,10 +8,10 @@ class Reynard
       extend Forwardable
       def_delegators :@http_response, :code, :content_type, :[], :body
 
-      def initialize(specification:, inflector:, request_context:, http_response:)
+      def initialize(specification:, request_context:, response_context:, http_response:)
         @specification = specification
-        @inflector = inflector
         @request_context = request_context
+        @response_context = response_context
         @http_response = http_response
       end
 
@@ -44,7 +44,7 @@ class Reynard
       def parsed_body
         return @parsed_body if defined?(@parsed_body)
 
-        @parsed_body = MultiJson.load(@http_response.body)
+        @parsed_body = deserialize_body
       end
 
       # Instantiates an object based on the schema that fits the response.
@@ -56,7 +56,34 @@ class Reynard
 
       private
 
+      def deserialize_body
+        return if @http_response.body.to_s == ''
+
+        deserializer_class.new(
+          headers: @http_response,
+          body: @http_response.body
+        ).call
+      end
+
+      def deserializer_class
+        @deserializer_class ||= pick_deserializer
+      end
+
+      def pick_deserializer
+        mime_type = @http_response.content_type.to_s.split(';', 2)[0]
+        if @response_context.deserializers.key?(mime_type)
+          @response_context.deserializers.fetch(mime_type)
+        else
+          raise(
+            KeyError,
+            "No registered deserializer for the response mime type `#{mime_type}'."
+          )
+        end
+      end
+
       def build_object
+        return unless parsed_body
+
         media_type = @specification.media_type(
           @request_context.operation.node,
           @http_response.code,
@@ -72,16 +99,14 @@ class Reynard
       def build_object_with_media_type(media_type)
         ObjectBuilder.new(
           schema: @specification.schema(media_type.node),
-          inflector: @inflector,
+          response_context: @response_context,
           parsed_body: parsed_body
         ).call
       end
 
       def build_object_without_media_type
-        # Try to parse the response as JSON and give up otherwise.
-        Reynard::Model.new(MultiJson.load(@http_response.body))
-      rescue StandardError
-        @http_response.body
+        # Try to parse the response and give up otherwise.
+        Reynard::Model.new(parsed_body, @response_context)
       end
     end
   end

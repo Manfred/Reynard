@@ -5,6 +5,9 @@ require 'rack'
 class Reynard
   # Wraps the YAML representation of an OpenAPI specification.
   class Specification
+    autoload :Finder, 'reynard/specification/finder'
+    autoload :Query, 'reynard/specification/query'
+
     VERBS = %w[get put post delete options head patch trace].freeze
 
     def initialize(filename:)
@@ -15,6 +18,13 @@ class Reynard
     # Digs a value out of the specification, taking $ref into account.
     def dig(*path)
       dig_into(@data, @data, path.dup, File.dirname(@filename))
+    end
+
+    # Yields all nodes in the specification matching the query.
+    #
+    # NOTE: please don't use this in a hot paths in production, primarily meant for tooling.
+    def find_each(type:, &block)
+      Finder.new(specification: self, query: Query.new(type:)).find_each(&block)
     end
 
     def servers
@@ -45,10 +55,8 @@ class Reynard
       ).to_h
     end
 
-    # Returns a serialized body instance to serialize a request body and figure out the request
-    # headers.
-    def build_body(operation_node, data)
-      SerializedBody.new(dig(*operation_node, 'requestBody', 'content'), data)
+    def content(operation_node)
+      Content.new(keys: dig(*operation_node, 'requestBody', 'content')&.keys || [])
     end
 
     def operation(operation_name)

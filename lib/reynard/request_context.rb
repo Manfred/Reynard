@@ -9,6 +9,7 @@ class Reynard
     :headers,
     :params,
     :body,
+    :serializers,
     keyword_init: true
   ) do
     def verb

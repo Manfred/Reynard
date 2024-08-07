@@ -6,7 +6,7 @@ class Reynard
   class ObjectBuilderTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
-      @inflector = Inflector.new
+      @response_context = ResponseContext.build
     end
 
     test 'builds a collection' do
@@ -15,7 +15,7 @@ class Reynard
       schema = @specification.schema(media_type.node)
       books = Reynard::ObjectBuilder.new(
         schema: schema,
-        inflector: @inflector,
+        response_context: @response_context,
         parsed_body: [{ id: 42, name: 'Black Science' }, { id: 51, name: 'Dead Astronauts' }]
       ).call
 
@@ -39,7 +39,7 @@ class Reynard
       schema = @specification.schema(media_type.node)
       book = Reynard::ObjectBuilder.new(
         schema: schema,
-        inflector: @inflector,
+        response_context: @response_context,
         parsed_body: { id: 42, name: 'Black Science' }
       ).call
       assert_model_name('Book', book)
@@ -51,7 +51,7 @@ class Reynard
   class ExternalObjectBuilderTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/external.yml'))
-      @inflector = Inflector.new
+      @response_context = ResponseContext.build
     end
 
     test 'builds a singular record' do
@@ -60,11 +60,12 @@ class Reynard
       schema = @specification.schema(media_type.node)
       author = Reynard::ObjectBuilder.new(
         schema: schema,
-        inflector: @inflector,
+        response_context: @response_context,
         parsed_body: {
           id: 42, name: 'Jerry Writer', bio: { age: 42 }
         }
       ).call
+
       assert_model_name('Author', author)
       assert_equal 42, author.id
       assert_equal 'Jerry Writer', author.name
@@ -75,7 +76,7 @@ class Reynard
   class TitledObjectBuilderTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/titled.yml'))
-      @inflector = Inflector.new
+      @response_context = ResponseContext.build
     end
 
     test 'builds a collection' do
@@ -84,7 +85,7 @@ class Reynard
       schema = @specification.schema(media_type.node)
       collection = Reynard::ObjectBuilder.new(
         schema: schema,
-        inflector: @inflector,
+        response_context: @response_context,
         parsed_body: [
           {
             isbn: '9781534307407',
@@ -109,7 +110,7 @@ class Reynard
 
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/weird.yml'))
-      @inflector = Inflector.new
+      @response_context = ResponseContext.build
     end
 
     test 'builds a singular record' do
@@ -118,7 +119,7 @@ class Reynard
       schema = @specification.schema(media_type.node)
       record = Reynard::ObjectBuilder.new(
         schema: schema,
-        inflector: @inflector,
+        response_context: @response_context,
         parsed_body: { name: '😇' }
       ).call
       assert_model_name('AFRootWithInThe', record)
@@ -128,7 +129,7 @@ class Reynard
 
   class BadTypeObjectBuilderTest < Reynard::Test
     def setup
-      @inflector = Inflector.new
+      @response_context = ResponseContext.build
     end
 
     test 'payload contains an object instead of an array' do
@@ -141,7 +142,7 @@ class Reynard
       exception = assert_raises(ArgumentError) do
         Reynard::ObjectBuilder.new(
           schema: schema,
-          inflector: @inflector,
+          response_context: @response_context,
           parsed_body: parsed_body
         ).call
       end
@@ -160,7 +161,7 @@ class Reynard
       exception = assert_raises(ArgumentError) do
         Reynard::ObjectBuilder.new(
           schema: schema,
-          inflector: @inflector,
+          response_context: @response_context,
           parsed_body: parsed_body
         ).call
       end
@@ -174,7 +175,7 @@ class Reynard
   class NestedObjectBuilderTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/nested.yml'))
-      @inflector = Inflector.new
+      @response_context = ResponseContext.build
     end
 
     test 'builds a collection' do
@@ -199,16 +200,16 @@ class Reynard
       schema = @specification.schema(media_type.node)
       library = Reynard::ObjectBuilder.new(
         schema: schema,
-        inflector: @inflector,
+        response_context: @response_context,
         parsed_body: parsed_body
       ).call
       assert_model_name('Library', library)
       assert_kind_of(Array, library.books)
-      library.books.each do |book|
-        assert_model_name('Book', book)
-        assert_model_name('Author', book.author)
-      end
 
+      library.books.each do |book|
+        assert_model_name('Library::Book', book)
+        assert_model_name('Library::Book::Author', book.author)
+      end
       assert_equal 'Borne', library.books[1].author.name
     end
   end

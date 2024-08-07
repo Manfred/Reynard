@@ -48,6 +48,42 @@ module Integration
       end
     end
 
+    test 'creates an object using multipart form data' do
+      with_simple_service do
+        name = 'An unexpected occurance'
+        response =
+          @reynard
+          .serializer('application/json', nil)
+          .operation('createBook')
+          .body({ 'name' => name })
+          .execute
+        assert_equal '200', response.code
+        book = response.object
+        assert_kind_of Reynard::Models::Book, book
+        assert_equal name, book.name
+      end
+    end
+
+    test 'creates an object using multipart form data including a file' do
+      filename = File.join(FILES_ROOT, 'ok.txt')
+      with_simple_service do
+        File.open(filename) do |file|
+          name = 'An unexpected occurance'
+          response =
+            @reynard
+            .serializer('application/json', nil)
+            .operation('createBook')
+            .body({ 'name' => name, 'avatar' => file })
+            .execute
+          assert_equal '200', response.code
+          book = response.object
+          assert_kind_of Reynard::Models::Book, book
+          assert_equal name, book.name
+          assert_equal File.read(filename), book.avatar
+        end
+      end
+    end
+
     test 'returns an error when fetching an object fails' do
       with_simple_service do
         response = @reynard.operation('fetchBook').params(id: -1).execute
