@@ -76,7 +76,7 @@ class Reynard
 
       test 'formats a model name based on the node to the schema' do
         assert_equal(
-          'NationalIndustry',
+          'NationalIndustryCollection',
           ModelNaming.new(
             specification: @specification,
             node: @node
@@ -130,15 +130,13 @@ class Reynard
         ]
 
         assert_equal(
-          'Sector',
+          'SectorCollection',
           ModelNaming.new(
             specification: @specification,
             node: node
           ).model_name
         )
-      end
 
-      test 'formats a model name based on the node to the schemas' do
         node = %w[
           paths
           /national_industries
@@ -151,7 +149,29 @@ class Reynard
         ]
 
         assert_equal(
-          'NationalIndustrie',
+          'NationalIndustryCollection',
+          ModelNaming.new(
+            specification: @specification,
+            node: node
+          ).model_name
+        )
+      end
+
+      test 'formats a model name for an array item' do
+        node = %w[
+          paths
+          /sectors
+          get
+          responses
+          200
+          content
+          application/json
+          schema
+          items
+        ]
+
+        assert_equal(
+          'Sector',
           ModelNaming.new(
             specification: @specification,
             node: node

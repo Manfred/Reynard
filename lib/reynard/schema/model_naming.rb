@@ -10,7 +10,12 @@ class Reynard
       end
 
       def model_name
-        title_model_name || ref_model_name || node_model_name
+        model_name = determine_model_name
+        if class_type == :array
+          "#{model_name}Collection"
+        else
+          model_name
+        end
       end
 
       def self.title_model_name(model_name)
@@ -54,6 +59,14 @@ class Reynard
       end
 
       private
+
+      def class_type
+        @specification.dig(*@node).key?('items') ? :array : :object
+      end
+
+      def determine_model_name
+        title_model_name || ref_model_name || node_model_name
+      end
 
       # Returns a model name when it was explicitly set using the title property in the specification.
       def title_model_name
