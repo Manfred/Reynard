@@ -34,7 +34,7 @@ class Reynard
   autoload :VERSION, 'reynard/version'
 
   def initialize(filename:)
-    @specification = Specification.new(filename: filename)
+    @specification = Specification.new(filename:)
     @inflector = Inflector.new
   end
 
