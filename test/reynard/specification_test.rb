@@ -152,7 +152,7 @@ class Reynard
         schema.node
       )
       assert_equal('array', schema.type)
-      assert_equal('Books', schema.model_name)
+      assert_equal('BooksCollection', schema.model_name)
       assert_equal('Book', schema.item_schema.model_name)
 
       operation = @specification.operation('fetchBook')
@@ -176,7 +176,7 @@ class Reynard
         schema.node
       )
       assert_equal('array', schema.type)
-      assert_equal('Books', schema.model_name)
+      assert_equal('BooksCollection', schema.model_name)
       assert_equal('Book', schema.item_schema.model_name)
 
       operation = @specification.operation('fetchBook')
