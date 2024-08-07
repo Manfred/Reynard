@@ -1,0 +1,104 @@
+openapi: "3.1.0"
+info:
+  title: Industry classification
+  version: 1.0.0
+  contact: {}
+  description: Uses industry classification example to show model naming based on schema.
+servers:
+  - url: https://example.com
+tags:
+  - name: naics
+    description: Classification System
+paths:
+  /sectors:
+    get:
+      summary: Get all sectors
+      description: Returns the entire taxonomy for the classification system.
+      operationId: getSectors
+      tags:
+        - naics
+      responses:
+        "200":
+          description: Entire tree of all sectors and their taxonomy.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    subsectors:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          industry_groups:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                industries:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      name:
+                                        type: string
+                                      national_industries:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            label:
+                                              type: string
+  /sectors/arts:
+    get:
+      summary: Get all the sectors within the arts.
+      description: Returns a list of all national industries.
+      operationId: getArtsSectors
+      tags:
+        - naics
+      responses:
+        "200":
+          description: List of national industies.
+          content:
+            application/json:
+              schema:
+                type: array
+                title: NationalIndustry
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    label:
+                      type: string
+  /national_industries:
+    get:
+      summary: Get all national industries.
+      description: Returns a list of all national industries.
+      operationId: getNationalIndustries
+      tags:
+        - naics
+      responses:
+        "200":
+          description: List of national industies.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    label:
+                      type: string
