@@ -24,7 +24,7 @@ module Integration
         response = @reynard.operation('listBooks').execute
         assert_equal '200', response.code
         books = response.object
-        assert_kind_of Reynard::Models::Books, books
+        assert_kind_of Reynard::Models::BooksCollection, books
       end
     end
 

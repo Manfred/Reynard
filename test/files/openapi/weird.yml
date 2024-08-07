@@ -25,7 +25,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: A clown.
           content:
             application/json:
@@ -39,7 +39,7 @@ paths:
       tags:
         - complex
       responses:
-        '200':
+        "200":
           description: " it's not empty 🚕"
           content:
             application/json:
@@ -49,6 +49,70 @@ paths:
                 properties:
                   name:
                     type: string
+  /fugol:
+    get:
+      description: Get all fugol
+      operationId: fetchFugol
+      tags:
+        - complex
+      responses:
+        "200":
+          description: Success!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    birds:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+  /duckbills:
+    get:
+      description: Get all duckbills
+      operationId: fetchDuckbills
+      tags:
+        - complex
+      responses:
+        "200":
+          description: Success!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    color:
+                      type: integer
+  /duckbills/{id}:
+    get:
+      description: Get a duckbill
+      operationId: fetchDuckbill
+      tags:
+        - complex
+      parameters:
+        - name: id
+          in: path
+          description: Identifier for the duckbill.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  color:
+                    type: integer
 components:
   schemas:
     " howdy⚠️.Pardner":
@@ -58,4 +122,3 @@ components:
       properties:
         placeholder:
           type: string
-

@@ -30,6 +30,21 @@ class Reynard
       )
     end
 
+    test 'finds each node with a specified type in the specification' do
+      found = false
+      @specification.find_each(type: 'object') do |node|
+        found = true
+        assert_equal('object', @specification.dig(*node)['type'])
+      end
+      assert found
+    end
+
+    test 'does not find nodes with non-existent type' do
+      @specification.find_each(type: 'non-existent') do
+        raise 'Must not find anything'
+      end
+    end
+
     test 'returns servers' do
       assert_equal(
         %w[
@@ -137,7 +152,7 @@ class Reynard
         schema.node
       )
       assert_equal('array', schema.type)
-      assert_equal('Books', schema.model_name)
+      assert_equal('BooksCollection', schema.model_name)
       assert_equal('Book', schema.item_schema.model_name)
 
       operation = @specification.operation('fetchBook')
@@ -161,7 +176,7 @@ class Reynard
         schema.node
       )
       assert_equal('array', schema.type)
-      assert_equal('Books', schema.model_name)
+      assert_equal('BooksCollection', schema.model_name)
       assert_equal('Book', schema.item_schema.model_name)
 
       operation = @specification.operation('fetchBook')

@@ -26,7 +26,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: An array of books.
           content:
             application/json:
@@ -49,8 +49,14 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/Book"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/BookFormData"
+          text/plain:
+            schema:
+              type: string
       responses:
-        '200':
+        "200":
           description: A book.
           content:
             application/json:
@@ -77,7 +83,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: A book.
           content:
             application/json:
@@ -103,7 +109,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: A book.
           content:
             application/json:
@@ -132,7 +138,7 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
+        "204":
           description: Book was deleted.
         default:
           description: Book was deleted.
@@ -144,7 +150,7 @@ paths:
       tags:
         - books
       responses:
-        '200':
+        "200":
           description: A book.
           content:
             application/json:
@@ -171,7 +177,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: An array of books.
           content:
             application/json:
@@ -198,6 +204,22 @@ components:
           type: string
         tag:
           type: string
+    BookFormData:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        tag:
+          type: string
+        image:
+          type: string
+          format: binary
     Books:
       type: array
       items:
