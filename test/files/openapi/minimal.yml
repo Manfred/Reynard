@@ -1,0 +1,28 @@
+openapi: "3.0.0"
+info:
+  title: Spaceships
+  version: 1.0.0
+  contact: {}
+  description: Everything you want to know about your favorite mode of transportation.
+servers:
+  - url: http://example.com
+tags:
+  - name: spaceships
+    description: Ships of space
+paths:
+  /spaceships:
+    get:
+      summary: List all spaceships
+      description: Produces a list of all spaceships known to us.
+      operationId: allSpaceShips
+      tags:
+        - spaceships
+      responses:
+        "200":
+          description: Array of spaceships.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
