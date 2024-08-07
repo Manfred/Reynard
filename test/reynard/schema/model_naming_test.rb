@@ -50,17 +50,27 @@ class Reynard
       EXPECTED = {
         'bare' => [],
         'external' => %w[Author Bio Error],
+        'minimal' => %w[Spaceship SpaceshipCollection],
         'naming' => %w[
           Sector Subsector IndustryGroup Industry NationalIndustry Art NationalIndustry
+          SectorCollection SubsectorsCollection IndustryGroupsCollection IndustriesCollection
+          NationalIndustriesCollection NationalIndustryCollection NationalIndustryCollection
         ],
-        'nested' => %w[Library Book Author Error Library Book Author Book Author Error],
+        'nested' => %w[
+          Library Book Author Error Library Book Author Book Author Error
+          BooksCollection BooksCollection
+        ],
         'params' => %w[],
         'simple' => %w[
           Book Error Book BookFormData Book Error Book Error Book Error
           Book Error Book Error Book Error Book Bookformdata Book Error
+          BooksCollection BooksCollection BooksCollection
         ],
-        'titled' => %w[ISBN],
-        'weird' => %w[HowdyPardner AFRootWithInThe Fugol Bird Duckbill Duckbill HowdyPardner]
+        'titled' => %w[ISBN IsbnCollection],
+        'weird' => %w[
+          HowdyPardner AFRootWithInThe Fugol Bird Duckbill Duckbill HowdyPardner
+          FugolCollection BirdsCollection DuckbillCollection
+        ]
       }.freeze
 
       test 'produces a model name for every schema node in every specification' do
@@ -69,7 +79,18 @@ class Reynard
           generated = []
 
           specification = Specification.new(filename: filename)
+
           specification.find_each(type: 'object') do |node|
+            naming = ModelNaming.new(specification: specification, node: node)
+            model_name = naming.model_name
+            generated << model_name
+
+            refute_nil model_name
+            assert_kind_of(String, model_name)
+            assert model_name.size > 2, model_name
+          end
+
+          specification.find_each(type: 'array') do |node|
             naming = ModelNaming.new(specification: specification, node: node)
             model_name = naming.model_name
             generated << model_name
