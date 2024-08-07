@@ -26,7 +26,7 @@ class Reynard
     #
     # Please don't use this in a hot paths in production, primarily meant for testing and tooling.
     def find_each(type:, &block)
-      Finder.new(specification: self, query: Query.new(type: type)).find_each(&block)
+      Finder.new(specification: self, query: Query.new(type:)).find_each(&block)
     end
 
     def servers
