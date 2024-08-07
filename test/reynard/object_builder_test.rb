@@ -212,4 +212,72 @@ class Reynard
       assert_equal 'Borne', library.books[1].author.name
     end
   end
+
+  class NamingObjectBuilderTest < Reynard::Test
+    def setup
+      @specification = Specification.new(filename: fixture_file('openapi/naming.yml'))
+      @inflector = Inflector.new
+    end
+
+    test 'builds objects for data in a large nested array of trees' do
+      operation = @specification.operation('getSectors')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      schema = @specification.schema(media_type.node)
+      record = Reynard::ObjectBuilder.new(
+        schema: schema,
+        inflector: @inflector,
+        parsed_body: [
+          {
+            id: 76,
+            name: 'Industry',
+            subsectors: [
+              {
+                name: 'Light Industry',
+                industry_groups: [
+                  {
+                    name: 'Electronics',
+                    industries: [
+                      {
+                        name: 'Chip Manufacturing',
+                        national_industries: [
+                          {
+                            label: 'chip-manu-gb'
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      ).call
+
+      assert_model_name('SectorCollection', record)
+
+      sector = record[0]
+      assert_model_name('Sector', sector)
+
+      assert_model_name('SubsectorsCollection', sector.subsectors)
+
+      subsector = sector.subsectors[0]
+      assert_model_name('Subsector', subsector)
+
+      assert_model_name('IndustryGroupsCollection', subsector.industry_groups)
+
+      industry_group = subsector.industry_groups[0]
+      assert_model_name('IndustryGroup', industry_group)
+
+      assert_model_name('IndustriesCollection', industry_group.industries)
+
+      industry = industry_group.industries[0]
+      assert_model_name('Industry', industry)
+
+      assert_model_name('NationalIndustriesCollection', industry.national_industries)
+
+      national_industry = industry.national_industries[0]
+      assert_model_name('NationalIndustry', national_industry)
+    end
+  end
 end
