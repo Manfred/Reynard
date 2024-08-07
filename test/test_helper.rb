@@ -28,8 +28,8 @@ class Reynard
       remove_constants
     end
 
-    def self.test(description, &block)
-      define_method("test_#{description}", &block)
+    def self.test(description, &)
+      define_method("test_#{description}", &)
     end
 
     private
