@@ -5,6 +5,8 @@ require 'rack'
 class Reynard
   # Wraps the YAML representation of an OpenAPI specification.
   class Specification
+    autoload :Query, 'reynard/specification/query'
+
     VERBS = %w[get put post delete options head patch trace].freeze
 
     def initialize(filename:)
