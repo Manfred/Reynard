@@ -45,7 +45,12 @@ class Reynard
       end
 
       def self.singularize(name)
-        name.chomp('s')
+        case name
+        when /ies$/
+          "#{name[0..-4]}y"
+        else
+          name.chomp('s')
+        end
       end
 
       private

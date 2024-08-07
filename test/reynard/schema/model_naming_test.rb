@@ -35,6 +35,16 @@ class Reynard
         assert_nil ModelNaming.ref_model_name(nil)
       end
 
+      test 'singularizes strings' do
+        [
+          %w[model model],
+          %w[ducks duck],
+          %w[industries industry]
+        ].each do |input, expected|
+          assert_equal expected, ModelNaming.singularize(input)
+        end
+      end
+
       test 'produces a model name for every schema node in every specification' do
         Dir.glob(File.join(FILES_ROOT, 'openapi/*.yml')).map do |filename|
           specification = Specification.new(filename: filename)
