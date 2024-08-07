@@ -11,7 +11,7 @@ class Reynard
 
       test 'finds all nodes in a specification that match a type' do
         query = Query.new(type: 'object')
-        finder = Finder.new(specification: @specification, query: query)
+        finder = Finder.new(specification: @specification, query:)
         found = []
         finder.find_each do |node|
           found << node.join('::')
@@ -45,7 +45,7 @@ class Reynard
 
       test 'does not find nodes for query without match' do
         query = Query.new(type: 'unknown')
-        finder = Finder.new(specification: @specification, query: query)
+        finder = Finder.new(specification: @specification, query:)
         finder.find_each { raise 'Must not find anything' }
       end
     end
