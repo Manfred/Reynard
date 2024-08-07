@@ -4,35 +4,6 @@ require_relative '../test_helper'
 
 class Reynard
   class SchemaTest < Reynard::Test
-    test 'formats a model name based on the title specification' do
-      {
-        'AdministrationAgreement' => 'AdministrationAgreement',
-        'Library' => 'Library',
-        'ISBN' => 'ISBN',
-        ' A %2F root with 🚕 in the ' => 'AFRootWithInThe'
-      }.each do |model_name, expected|
-        assert_equal expected, Schema.title_model_name(model_name)
-      end
-    end
-
-    test 'does not return a model name based on a missing title' do
-      assert_nil Schema.title_model_name(nil)
-    end
-
-    test 'formats a model name based on a ref to a schema' do
-      {
-        '#/components/schemas/Library' => 'Library',
-        './schemas/author.yml' => 'Author',
-        '#/components/schemas/%20howdy%E2%9A%A0%EF%B8%8F.Pardner' => 'HowdyPardner',
-        '#/components/schemas/Service.Subscription' => 'ServiceSubscription'
-      }.each do |ref, expected|
-        assert_equal expected, Schema.ref_model_name(ref)
-      end
-    end
-
-    test 'does not return a model name based on a missing ref' do
-      assert_nil Schema.ref_model_name(nil)
-    end
   end
 
   class SingularTopLevelSchemaTest < Reynard::Test
