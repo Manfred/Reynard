@@ -44,213 +44,43 @@ class Reynard
           assert_equal expected, ModelNaming.singularize(input)
         end
       end
+    end
+
+    class RegressionModelNamingTest < Reynard::Test
+      EXPECTED = {
+        'bare' => [],
+        'external' => %w[Author Bio Error],
+        'naming' => %w[
+          Sector Subsector IndustryGroup Industry NationalIndustry Art NationalIndustry
+        ],
+        'nested' => %w[Library Book Author Error Library Book Author Book Author Error],
+        'params' => %w[],
+        'simple' => %w[
+          Book Error Book BookFormData Book Error Book Error Book Error
+          Book Error Book Error Book Error Book Bookformdata Book Error
+        ],
+        'titled' => %w[ISBN],
+        'weird' => %w[HowdyPardner AFRootWithInThe Fugol Bird Duckbill Duckbill HowdyPardner]
+      }.freeze
 
       test 'produces a model name for every schema node in every specification' do
         Dir.glob(File.join(FILES_ROOT, 'openapi/*.yml')).map do |filename|
+          example_name = File.basename(filename, '.yml')
+          generated = []
+
           specification = Specification.new(filename: filename)
           specification.find_each(type: 'object') do |node|
             naming = ModelNaming.new(specification: specification, node: node)
             model_name = naming.model_name
+            generated << model_name
+
             refute_nil model_name
             assert_kind_of(String, model_name)
             assert model_name.size > 2, model_name
           end
+
+          assert_equal(EXPECTED.fetch(example_name), generated, "In filename: #{filename}")
         end
-      end
-    end
-
-    class TitleModelNamingTest < Reynard::Test
-      def setup
-        @specification = Specification.new(filename: fixture_file('openapi/naming.yml'))
-        @node = %w[
-          paths
-          /sectors/arts
-          get
-          responses
-          200
-          content
-          application/json
-          schema
-        ]
-      end
-
-      test 'formats a model name based on the node to the schema' do
-        assert_equal(
-          'NationalIndustryCollection',
-          ModelNaming.new(
-            specification: @specification,
-            node: @node
-          ).model_name
-        )
-      end
-    end
-
-    class RefModelNamingTest < Reynard::Test
-      def setup
-        @specification = Specification.new(filename: fixture_file('openapi/simple.yml'))
-      end
-
-      test 'formats a model name based on the ref to the schema' do
-        node = %w[
-          paths
-          /books/{id}
-          get
-          responses
-          200
-          content
-          application/json
-          schema
-        ]
-
-        assert_equal(
-          'Book',
-          ModelNaming.new(
-            specification: @specification,
-            node: node
-          ).model_name
-        )
-      end
-    end
-
-    class ModelNamingTest < Reynard::Test
-      def setup
-        @specification = Specification.new(filename: fixture_file('openapi/naming.yml'))
-      end
-
-      test 'formats a model name based on the node to the schema' do
-        node = %w[
-          paths
-          /sectors
-          get
-          responses
-          200
-          content
-          application/json
-          schema
-        ]
-
-        assert_equal(
-          'SectorCollection',
-          ModelNaming.new(
-            specification: @specification,
-            node: node
-          ).model_name
-        )
-
-        node = %w[
-          paths
-          /national_industries
-          get
-          responses
-          200
-          content
-          application/json
-          schema
-        ]
-
-        assert_equal(
-          'NationalIndustryCollection',
-          ModelNaming.new(
-            specification: @specification,
-            node: node
-          ).model_name
-        )
-      end
-
-      test 'formats a model name for an array item' do
-        node = %w[
-          paths
-          /sectors
-          get
-          responses
-          200
-          content
-          application/json
-          schema
-          items
-        ]
-
-        assert_equal(
-          'Sector',
-          ModelNaming.new(
-            specification: @specification,
-            node: node
-          ).model_name
-        )
-      end
-    end
-
-    class SpecialModelNamingTest < Reynard::Test
-      def setup
-        @specification = Specification.new(filename: fixture_file('openapi/weird.yml'))
-      end
-
-      test 'formats a model name based on property name for an array item' do
-        node = %w[
-          paths
-          /fugol
-          get
-          responses
-          200
-          content
-          application/json
-          schema
-          items
-          properties
-          birds
-          items
-        ]
-
-        assert_equal(
-          'Bird',
-          ModelNaming.new(
-            specification: @specification,
-            node: node
-          ).model_name
-        )
-      end
-
-      test 'formats a model name based on the request path when node has no property name' do
-        node = %w[
-          paths
-          /duckbills/{id}
-          get
-          responses
-          200
-          content
-          application/json
-          schema
-        ]
-
-        assert_equal(
-          'Duckbill',
-          ModelNaming.new(
-            specification: @specification,
-            node: node
-          ).model_name
-        )
-      end
-
-      test 'formats a model name based on the request path when array item has no property name' do
-        node = %w[
-          paths
-          /duckbills
-          get
-          responses
-          200
-          content
-          application/json
-          schema
-          items
-        ]
-
-        assert_equal(
-          'Duckbill',
-          ModelNaming.new(
-            specification: @specification,
-            node: node
-          ).model_name
-        )
       end
     end
   end
