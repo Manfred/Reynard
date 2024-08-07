@@ -78,10 +78,10 @@ class Reynard
           example_name = File.basename(filename, '.yml')
           generated = []
 
-          specification = Specification.new(filename: filename)
+          specification = Specification.new(filename:)
 
           specification.find_each(type: 'object') do |node|
-            naming = ModelNaming.new(specification: specification, node: node)
+            naming = ModelNaming.new(specification:, node:)
             model_name = naming.model_name
             generated << model_name
 
@@ -91,7 +91,7 @@ class Reynard
           end
 
           specification.find_each(type: 'array') do |node|
-            naming = ModelNaming.new(specification: specification, node: node)
+            naming = ModelNaming.new(specification:, node:)
             model_name = naming.model_name
             generated << model_name
 

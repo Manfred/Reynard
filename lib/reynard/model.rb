@@ -76,7 +76,7 @@ class Reynard
       property = schema.property_schema(name)
       return value unless property
 
-      ::Reynard::ObjectBuilder.new(schema: property, inflector: inflector, parsed_body: value).call
+      ::Reynard::ObjectBuilder.new(schema: property, inflector:, parsed_body: value).call
     end
 
     def self.inflector
