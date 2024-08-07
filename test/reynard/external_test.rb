@@ -12,19 +12,19 @@ class Reynard
 
     test 'loads data from a schema relative to a specification' do
       path = File.join(FILES_ROOT, 'openapi')
-      data = External.new(path: path, ref: './schemas/author.yml').data
+      data = External.new(path:, ref: './schemas/author.yml').data
       assert_equal 'Author', data['title']
     end
 
     test 'returns an empty path when there is no anchor in the ref' do
       path = File.join(FILES_ROOT, 'openapi')
-      external = External.new(path: path, ref: './schemas/author.yml')
+      external = External.new(path:, ref: './schemas/author.yml')
       assert_equal [], external.path
     end
 
     test 'returns a path when there is an anchor in the ref' do
       path = File.join(FILES_ROOT, 'openapi')
-      external = External.new(path: path, ref: './schemas/author.yml#/properties/id')
+      external = External.new(path:, ref: './schemas/author.yml#/properties/id')
       assert_equal %w[properties id], external.path
     end
   end
