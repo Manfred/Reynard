@@ -20,6 +20,15 @@ class Reynard
       dig_into(@data, @data, path.dup, File.dirname(@filename))
     end
 
+    # Yields all nodes in the specification matching the specified type.
+    #
+    #   specification.find_each(type: 'object') {}
+    #
+    # Please don't use this in a hot paths in production, primarily meant for testing and tooling.
+    def find_each(type:, &block)
+      Finder.new(specification: self, query: Query.new(type: type)).find_each(&block)
+    end
+
     def servers
       dig('servers').map { |attributes| Server.new(attributes) }
     end
