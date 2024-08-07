@@ -9,8 +9,8 @@ class Reynard
         @query = query
       end
 
-      def find_each(&block)
-        find_into([], &block)
+      def find_each(&)
+        find_into([], &)
       end
 
       private
