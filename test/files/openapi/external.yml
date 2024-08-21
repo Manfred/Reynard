@@ -26,15 +26,29 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: A author.
           content:
             application/json:
               schema:
-                $ref: './schemas/author.yml'
+                $ref: "./schemas/author.yml"
         default:
           description: An error.
           content:
             application/json:
               schema:
                 $ref: "./simple.yml#/components/schemas/Error"
+  /authors/me:
+    get:
+      summary: Fetch own author profile
+      description: Fetch all details for own author profile
+      operationId: fetchAuthenticatedAuthor
+      tags:
+        - authors
+      responses:
+        "200":
+          description: A author.
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/author.yml"

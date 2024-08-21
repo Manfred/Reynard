@@ -3,9 +3,16 @@
 require 'rack'
 
 class Reynard
-  # Loads external references.
+  # Loads data for external references from disk.
   class External
-    def initialize(path:, ref:)
+    # Build a new external reference loader.
+    #
+    # @param basepath [String] base path of the OpenAPI specification, we never load any files
+    #        higher in the directory tree
+    # @param path [String] base path of the current file, used to resolve relative paths
+    # @param ref [String] the $ref value we actually resolve
+    def initialize(basepath:, path:, ref:)
+      @basepath = basepath
       @path = path
       @relative_path, @anchor = ref.split('#', 2)
       @filename = File.expand_path(@relative_path, @path)
@@ -30,7 +37,7 @@ class Reynard
     private
 
     def filename
-      return @filename if @filename.start_with?(@path)
+      return @filename if @filename.start_with?(@basepath)
 
       raise 'You are only allowed to reference files relative to the specification file.'
     end

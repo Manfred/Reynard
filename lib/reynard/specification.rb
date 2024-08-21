@@ -113,7 +113,6 @@ class Reynard
     end
 
     # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/CyclomaticComplexity
     # rubocop:disable Metrics/MethodLength
     def dig_into(data, cursor, path, filesystem_path)
       while path.length.positive?
@@ -129,8 +128,8 @@ class Reynard
           path = Rack::Utils.unescape_path(cursor['$ref'][2..]).split('/') + path
           cursor = data
         # References another file, with an optional anchor to an element in the data.
-        when %r{\A\./}
-          external = External.new(path: filesystem_path, ref: cursor['$ref'])
+        else
+          external = External.new(basepath:, path: filesystem_path, ref: cursor['$ref'])
           filesystem_path = external.filesystem_path
           path = external.path + path
           cursor = external.data
@@ -139,7 +138,10 @@ class Reynard
       cursor
     end
     # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/CyclomaticComplexity
     # rubocop:enable Metrics/MethodLength
+
+    def basepath
+      File.dirname(File.expand_path(@filename))
+    end
   end
 end
