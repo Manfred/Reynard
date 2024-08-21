@@ -242,6 +242,15 @@ class Reynard
 
     test 'digs into an external file through a reference' do
       data = @specification.dig(
+        'paths', '/authors/me', 'get', 'responses', '200',
+        'content', 'application/json', 'schema',
+        'properties', 'id', 'type'
+      )
+      assert_equal 'integer', data
+    end
+
+    test 'digs into an external file through an explicit relative reference' do
+      data = @specification.dig(
         'paths', '/authors/{id}', 'get', 'responses', '200',
         'content', 'application/json', 'schema',
         'properties', 'id', 'type'
