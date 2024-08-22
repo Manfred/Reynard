@@ -19,12 +19,7 @@ paths:
       tags:
         - authors
       parameters:
-        - name: id
-          in: path
-          description: The numeric ID of the author.
-          required: true
-          schema:
-            type: integer
+        - $ref: "components/parameters.yml#components/parameters/author_id"
       responses:
         "200":
           description: A author.

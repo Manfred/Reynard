@@ -214,6 +214,15 @@ class Reynard
         @specification.build_grouped_params(operation.node, params)
       )
     end
+
+    test 'applies a parameter specification when it was defined with a $ref' do
+      operation = @specification.operation('getProfile')
+      params = { 'name' => 'srgb', 'version' => 14 }
+      assert_equal(
+        { 'path' => { 'name' => 'srgb', 'version' => 14 } },
+        @specification.build_grouped_params(operation.node, params)
+      )
+    end
   end
 
   class BareSpecificationTest < Reynard::Test
@@ -265,6 +274,11 @@ class Reynard
         'properties', 'bio', 'properties', 'age', 'type'
       )
       assert_equal 'integer', data
+    end
+
+    test 'digs into an external file through a reference in an external file with an anchor' do
+      data = @specification.dig('paths', '/authors/{id}', 'get', 'parameters', 0, 'name')
+      assert_equal 'id', data
     end
 
     test 'digs into an external file with an anchor' do

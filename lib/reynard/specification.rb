@@ -47,13 +47,9 @@ class Reynard
       return {} unless params
 
       GroupedParameters.new(
-        [
-          # Parameters can be shared between methods on a path or be specific to an operation. The
-          # parameters on the operation level override those at the path level.
-          dig(*operation_node, 'parameters'),
-          dig(*operation_node[..-2], 'parameters')
-        ].compact.flatten,
-        params
+        specification: self,
+        node: operation_node,
+        params:
       ).to_h
     end
 
