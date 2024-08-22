@@ -21,7 +21,10 @@ class Reynard
     def path
       return [] unless @anchor
 
-      @anchor.split('/')[1..]
+      # Remove explicit absolute (ie. /) and explicitly relative (ie. ./) instructions from the
+      # path expression because we're starting at the root of an external file. We currently don't
+      # support the // syntax.
+      @anchor.to_s.gsub(%r{\A\.?/}, '').split('/')
     end
 
     def data

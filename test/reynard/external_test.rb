@@ -43,5 +43,17 @@ class Reynard
       external = External.new(basepath: path, path:, ref: './schemas/author.yml#/properties/id')
       assert_equal %w[properties id], external.path
     end
+
+    test 'returns a path when there is a relative anchor in the ref' do
+      path = File.join(FILES_ROOT, 'openapi')
+      external = External.new(basepath: path, path:, ref: './schemas/author.yml#properties/id')
+      assert_equal %w[properties id], external.path
+    end
+
+    test 'returns a path when there is an explicitly relative anchor in the ref' do
+      path = File.join(FILES_ROOT, 'openapi')
+      external = External.new(basepath: path, path:, ref: './schemas/author.yml#./properties/id')
+      assert_equal %w[properties id], external.path
+    end
   end
 end
