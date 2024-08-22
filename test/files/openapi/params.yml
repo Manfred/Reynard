@@ -10,6 +10,25 @@ tags:
   - name: parameters
     description: Complex parameters
 paths:
+  /spaces:
+    get:
+      summary: Get all color spaces
+      description: Get details about all color spaces.
+      operationId: getSpaces
+      tags:
+        - parameters
+      parameters:
+        - in: path
+          name: id
+        - in: query
+          name: format
+        - in: header
+          name: Accept
+        - in: cookie
+          name: authorization
+      responses:
+        "200":
+          description: A list of color spaces.
   /spaces/{name}:
     parameters:
       - in: path
@@ -33,7 +52,7 @@ paths:
       tags:
         - parameters
       responses:
-        '200':
+        "200":
           description: A color space.
     patch:
       summary: Update color space
@@ -52,5 +71,26 @@ paths:
       tags:
         - parameters
       responses:
-        '200':
+        "200":
           description: A color space.
+  /profiles/{name}/{version}:
+    get:
+      summary: Get color profile
+      description: Get details about a color profile.
+      operationId: getProfile
+      tags:
+        - parameters
+      parameters:
+        - $ref: "#/components/parameters/name"
+        - $ref: "components/parameters.yml#components/parameters/version"
+      responses:
+        "200":
+          description: A color profile.
+components:
+  parameters:
+    name:
+      in: path
+      name: name
+      required: true
+      schema:
+        type: string

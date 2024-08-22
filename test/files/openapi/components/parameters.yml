@@ -1,0 +1,15 @@
+components:
+  parameters:
+    author_id:
+      name: id
+      in: path
+      description: The numeric ID of the author.
+      required: true
+      schema:
+        type: integer
+    version:
+      in: path
+      name: version
+      required: true
+      schema:
+        type: integer
