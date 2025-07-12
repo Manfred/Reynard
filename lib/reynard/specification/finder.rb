@@ -18,7 +18,7 @@ class Reynard
       def find_into(path, &block)
         data = @specification.dig(*path)
 
-        yield path if data.respond_to?(:key?) && (data.key?('type') && (@query.type == data['type']))
+        yield path if data.respond_to?(:key?) && data.key?('type') && (@query.type == data['type'])
 
         return unless data.respond_to?(:each_key)
 
