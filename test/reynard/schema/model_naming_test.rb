@@ -49,7 +49,7 @@ class Reynard
     class RegressionModelNamingTest < Reynard::Test
       EXPECTED = {
         'bare' => [],
-        'external' => %w[Author Bio Error Author Bio],
+        'external' => %w[Author Bio Error Author Bio Author Bio Error AuthorsCollection],
         'minimal' => %w[Spaceship SpaceshipCollection],
         'naming' => %w[
           Sector Subsector IndustryGroup Industry NationalIndustry Art NationalIndustry
