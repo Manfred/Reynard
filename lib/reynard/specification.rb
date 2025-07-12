@@ -60,7 +60,8 @@ class Reynard
     end
 
     def operation(operation_name)
-      dig('paths').each do |path, operations|
+      dig('paths').each_key do |path|
+        operations = dig('paths', path)
         operations.slice(*VERBS).each do |verb, operation|
           return Operation.new(node: ['paths', path, verb]) if operation_name == operation['operationId']
         end

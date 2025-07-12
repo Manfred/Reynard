@@ -72,6 +72,31 @@ class Reynard
     end
   end
 
+  class ExternalRequestPathAndDeepRefsBuilderTest < Reynard::Test
+    def setup
+      @specification = Specification.new(filename: fixture_file('openapi/external.yml'))
+      @inflector = Inflector.new
+    end
+
+    test 'builds a singular record' do
+      operation = @specification.operation('listAuthors')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      schema = @specification.schema(media_type.node)
+      authors = Reynard::ObjectBuilder.new(
+        schema:,
+        inflector: @inflector,
+        parsed_body: [
+          { id: 42, name: 'Jerry Writer', bio: { age: 42 } }
+        ]
+      ).call
+      assert_model_name('AuthorsCollection', authors)
+      authors.each do |author|
+        assert_model_name('Author', author)
+        assert_equal 42, author.id
+      end
+    end
+  end
+
   class TitledObjectBuilderTest < Reynard::Test
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/titled.yml'))

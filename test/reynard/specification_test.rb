@@ -241,6 +241,15 @@ class Reynard
       @specification = Specification.new(filename: fixture_file('openapi/external.yml'))
     end
 
+    test 'finds an operation, loads media type, and returns schema defined externally in a file' do
+      operation = @specification.operation('listAuthors')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      assert_equal(
+        'array',
+        @specification.dig(*media_type.node, 'schema', 'type')
+      )
+    end
+
     test 'digs into an external file' do
       data = @specification.dig(
         'paths', '/authors/{id}', 'get', 'responses', '200',

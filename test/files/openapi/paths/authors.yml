@@ -1,0 +1,21 @@
+paths:
+  index:
+    get:
+      summary: Fetch authors
+      description: Fetch a list of all authors
+      operationId: listAuthors
+      tags:
+        - authors
+      responses:
+        "200":
+          description: A list of authors
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/authors.yml"
+        default:
+          description: An error.
+          content:
+            application/json:
+              schema:
+                $ref: "../simple.yml#/components/schemas/Error"

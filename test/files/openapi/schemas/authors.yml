@@ -1,0 +1,6 @@
+type: array
+title: Authors
+description: >-
+  A list of authors of a book.
+items:
+  $ref: "author.yml"

@@ -47,3 +47,5 @@ paths:
             application/json:
               schema:
                 $ref: "schemas/author.yml"
+  /authors:
+    $ref: "./paths/authors.yml#/paths/index"
