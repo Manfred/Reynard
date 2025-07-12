@@ -4,7 +4,7 @@ jobs:
   build:
     strategy:
       matrix:
-        version: ["ruby:3.3", "ruby:3.2", "ruby:3.1"]
+        version: ["ruby:3.4", "ruby:3.3", "ruby:3.2"]
     runs-on: ubuntu-latest
     container: ${{ matrix.version }}
     steps:
