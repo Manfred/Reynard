@@ -8,7 +8,6 @@ SUPPORT_ROOT = "#{TEST_ROOT}/support".freeze
 
 require 'minitest/autorun'
 require 'webmock/minitest'
-require 'ostruct'
 require 'logger'
 
 $LOAD_PATH << File.expand_path('../lib', __dir__)

@@ -2,6 +2,8 @@
 
 require_relative '../test_helper'
 
+require 'open3'
+
 module Integration
   class ReynardTest < Reynard::Test
     def setup

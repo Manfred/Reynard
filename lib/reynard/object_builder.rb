@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'ostruct'
-
 class Reynard
   # Defines dynamic classes based on schema and instantiates them for a response.
   class ObjectBuilder
