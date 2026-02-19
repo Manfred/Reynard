@@ -60,6 +60,21 @@ class Reynard
     end
   end
 
+  def self.permitted_classes
+    @permitted_classes = parse_permitted_classes(ENV['REYNARD_PERMITTED_CLASSES']) || []
+  end
+
+  def self.parse_permitted_classes(env_value)
+    return nil unless env_value
+
+    env_value.split(',').map(&:strip).map do |class_name|
+      Object.const_get(class_name)
+    rescue NameError
+      warn "Warning: Could not find class #{class_name}"
+      nil
+    end.compact
+  end
+
   private
 
   def build_context
