@@ -1,0 +1,105 @@
+openapi: "3.1.0"
+info:
+  title: Pets
+  version: 1.0.0
+  contact: {}
+  description: Find out about my pet.
+servers:
+  - url: http://example.com
+tags:
+  - name: pets
+    description: Animals in custody of a person.
+paths:
+  /pets:
+    get:
+      summary: List all pets
+      description: A list of all my pets.
+      operationId: getPets
+      tags:
+        - pets
+      responses:
+        "200":
+          description: Array of pets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                  - $ref: '#/components/schemas/Cat'
+                  - $ref: '#/components/schemas/Dog'
+  /pets/{id}:
+    get:
+      summary: Get pet
+      description: A description of the pet
+      operationId: getPet
+      tags:
+        - pets
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A pet
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Cat'
+                  - $ref: '#/components/schemas/Dog'
+                discriminator:
+                  propertyName: pet_type
+  /status:
+    get:
+      summary: Get status of the service
+      description: A status object for the service
+      operationId: getStatus
+      tags:
+        - pets
+      responses:
+        "200":
+          description: A status
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - type: object
+                    properties:
+                      status:
+                        type: string
+                  - type: object
+                    properties:
+                      description:
+                        type: string
+                  - type: object
+                    properties:
+                      status:
+                        type: integer
+components:
+  schemas:
+    Pet:
+      type: object
+      required:
+        - pet_type
+      properties:
+        pet_type:
+          type: string
+      discriminator:
+        propertyName: pet_type
+    Cat:
+      allOf:
+        - $ref: "#/components/schemas/Pet"
+        - type: object
+          properties:
+            red:
+              type: boolean
+    Dog:
+      allOf:
+        - $ref: "#/components/schemas/Pet"
+        - type: object
+          properties:
+            tial:
+              type: boolean

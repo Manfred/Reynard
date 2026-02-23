@@ -70,7 +70,8 @@ class Reynard
         'weird' => %w[
           HowdyPardner AFRootWithInThe Fugol Bird Duckbill Duckbill HowdyPardner
           FugolCollection BirdsCollection DuckbillCollection
-        ]
+        ],
+        'polymorphic' => %w[Pet PetCollection]
       }.freeze
 
       test 'produces a model name for every schema node in every specification' do

@@ -4,6 +4,29 @@ require_relative '../test_helper'
 
 class Reynard
   class SchemaTest < Reynard::Test
+    test 'uses object schema type for object schemas' do
+      assert_equal('object', Schema.determine_schema_type({ 'type' => 'object' }))
+    end
+
+    test 'uses array schema type for array schemas' do
+      assert_equal('array', Schema.determine_schema_type({ 'type' => 'array' }))
+    end
+
+    test 'uses object schema type for allOf' do
+      assert_equal('object', Schema.determine_schema_type({ 'allOf' => {} }))
+    end
+
+    test 'uses object schema type for anyOf' do
+      assert_equal('object', Schema.determine_schema_type({ 'anyOf' => {} }))
+    end
+
+    test 'uses object schema type for oneOf' do
+      assert_equal('object', Schema.determine_schema_type({ 'oneOf' => {} }))
+    end
+
+    test 'does not return a schema type for unsupported schemas' do
+      assert_nil Schema.determine_schema_type({})
+    end
   end
 
   class SingularTopLevelSchemaTest < Reynard::Test

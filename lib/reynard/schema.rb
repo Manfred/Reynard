@@ -16,7 +16,8 @@ class Reynard
     def type
       return @type if defined?(@type)
 
-      @type = @specification.dig(*node, 'type')
+      schema = @specification.dig(*node)
+      @type = schema ? self.class.determine_schema_type(schema) : nil
     end
 
     def model_name
@@ -44,6 +45,14 @@ class Reynard
         node: property_node,
         namespace: [*namespace, model_name]
       )
+    end
+
+    def self.determine_schema_type(schema)
+      if schema.key?('type')
+        schema['type']
+      elsif schema.keys.intersect?(%w[allOf anyOf oneOf])
+        'object'
+      end
     end
 
     private
