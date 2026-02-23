@@ -305,4 +305,54 @@ class Reynard
       assert_model_name('NationalIndustry', national_industry)
     end
   end
+
+  class PolymorphicBuilderTest < Reynard::Test
+    Response = Struct.new(:body, keyword_init: true)
+
+    def setup
+      @specification = Specification.new(filename: fixture_file('openapi/polymorphic.yml'))
+      @inflector = Inflector.new
+    end
+
+    test 'handles oneOf and allOf' do
+      operation = @specification.operation('getPets')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      schema = @specification.schema(media_type.node)
+      collection = Reynard::ObjectBuilder.new(
+        schema:,
+        inflector: @inflector,
+        parsed_body: [
+          {
+            'pet_type' => 'Dog',
+            'tail' => true
+          }
+        ]
+      ).call
+
+      assert_equal(1, collection.size)
+      record = collection[0]
+
+      assert_model_name('Pet', record)
+      assert_equal 'Dog', record.pet_type
+      assert record.tail
+    end
+
+    test 'handles anyOf' do
+      operation = @specification.operation('getStatus')
+      media_type = @specification.media_type(operation.node, '200', 'application/json')
+      schema = @specification.schema(media_type.node)
+      record = Reynard::ObjectBuilder.new(
+        schema:,
+        inflector: @inflector,
+        parsed_body: {
+          'status' => 'online',
+          'description' => 'Everything works'
+        }
+      ).call
+
+      assert_model_name('Statu', record)
+      assert_equal 'online', record.status
+      assert_equal 'Everything works', record.description
+    end
+  end
 end

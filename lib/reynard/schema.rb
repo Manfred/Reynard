@@ -16,7 +16,8 @@ class Reynard
     def type
       return @type if defined?(@type)
 
-      @type = @specification.dig(*node, 'type')
+      schema = @specification.dig(*node)
+      @type = schema ? self.class.determine_schema_type(schema) : nil
     end
 
     def model_name
