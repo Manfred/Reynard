@@ -4,6 +4,7 @@ class Reynard
   # Exposes a public interface to build a request context.
   class Context
     extend Forwardable
+
     def_delegators :@request_context, :verb, :path, :full_path, :url
 
     def initialize(specification:, inflector:, request_context: nil)

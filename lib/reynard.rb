@@ -11,6 +11,7 @@ require 'uri'
 # OpenAPI specification.
 class Reynard
   extend Forwardable
+
   def_delegators :build_context, :logger, :base_url, :operation, :headers, :params
   def_delegators :@specification, :servers
   def_delegators :@inflector, :snake_cases

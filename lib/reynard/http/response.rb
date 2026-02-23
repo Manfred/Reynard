@@ -6,6 +6,7 @@ class Reynard
     # in the specification.
     class Response
       extend Forwardable
+
       def_delegators :@http_response, :code, :content_type, :[], :body
 
       def initialize(specification:, inflector:, request_context:, http_response:)
