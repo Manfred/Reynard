@@ -46,6 +46,14 @@ class Reynard
       )
     end
 
+    def self.determine_schema_type(schema)
+      if schema.key?('type')
+        schema['type']
+      elsif schema.keys.intersect?(%w[allOf anyOf oneOf])
+        'object'
+      end
+    end
+
     private
 
     def model_naming
