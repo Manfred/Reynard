@@ -8,8 +8,7 @@ class Reynard
     :operation,
     :headers,
     :params,
-    :body,
-    keyword_init: true
+    :body
   ) do
     def verb
       operation&.verb
