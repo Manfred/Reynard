@@ -130,7 +130,7 @@ class Reynard
   end
 
   class WeirdObjectBuilderTest < Reynard::Test
-    Response = Struct.new(:body, keyword_init: true)
+    Response = Struct.new(:body)
 
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/weird.yml'))
@@ -307,7 +307,7 @@ class Reynard
   end
 
   class PolymorphicBuilderTest < Reynard::Test
-    Response = Struct.new(:body, keyword_init: true)
+    Response = Struct.new(:body)
 
     def setup
       @specification = Specification.new(filename: fixture_file('openapi/polymorphic.yml'))

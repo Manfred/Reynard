@@ -4,7 +4,7 @@ require 'multi_json'
 require 'webrick'
 
 class SimpleService
-  Options = Struct.new(:port, keyword_init: true)
+  Options = Struct.new(:port)
 
   class Servlet < WEBrick::HTTPServlet::AbstractServlet
     def initialize(*)
