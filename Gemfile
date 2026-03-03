@@ -17,4 +17,7 @@ gem 'webmock'
 # Used as a web server for integration testing actual HTTP requests.
 gem 'webrick'
 
+# Used to test logging.
+gem 'logger'
+
 gemspec
