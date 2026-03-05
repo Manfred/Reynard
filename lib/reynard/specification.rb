@@ -105,7 +105,7 @@ class Reynard
 
     def read
       File.open(@filename, encoding: 'UTF-8') do |file|
-        YAML.safe_load(file, aliases: true)
+        YAML.safe_load(file, aliases: true, permitted_classes: Reynard.permitted_classes)
       end
     end
 
