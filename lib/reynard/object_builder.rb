@@ -3,6 +3,8 @@
 class Reynard
   # Defines dynamic classes based on schema and instantiates them for a response.
   class ObjectBuilder
+    MUTEX = Mutex.new
+
     attr_reader :schema, :parsed_body
 
     def initialize(schema:, inflector:, parsed_body:, model_name: nil)
@@ -17,11 +19,13 @@ class Reynard
     end
 
     def model_class
-      return @model_class if defined?(@model_class)
+      MUTEX.synchronize do
+        return @model_class if defined?(@model_class)
 
-      @model_class =
-        self.class.model_class_get(model_name) ||
-        self.class.model_class_set(model_name, schema, @inflector)
+        @model_class =
+          self.class.model_class_get(model_name) ||
+          self.class.model_class_set(model_name, schema, @inflector)
+      end
     end
 
     def call
