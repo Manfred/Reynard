@@ -95,7 +95,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-    put: &update
+    put:
       summary: Update book
       description: Update details for a book.
       operationId: updateBook
@@ -122,8 +122,31 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
     patch:
-      <<: *update
+      summary: Update book
+      description: Update details for a book.
       operationId: updateBook2
+      tags:
+        - books
+      parameters:
+        - name: id
+          in: path
+          description: The numeric ID of the book.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: A book.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        default:
+          description: An error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
     delete:
       summary: Delete book
       description: Delete a book.
