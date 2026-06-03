@@ -40,7 +40,7 @@ class Reynard
     private
 
     def filename
-      return @filename if @filename.start_with?(@basepath)
+      return @filename if @filename.start_with?("#{@basepath}/")
 
       raise 'You are only allowed to reference files relative to the specification file.'
     end

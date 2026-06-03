@@ -10,6 +10,14 @@ class Reynard
       end
     end
 
+    test 'raises an exception when attempting to access sibling path with same base path' do
+      assert_raises(RuntimeError) do
+        External.new(
+          basepath: FILES_ROOT, path: FILES_ROOT, ref: '../files-inaccessible/secrets.txt'
+        ).data
+      end
+    end
+
     test 'loads data from a schema relative to the current path' do
       basepath = File.join(FILES_ROOT, 'openapi')
       path = File.join(FILES_ROOT, 'openapi/schemas')
