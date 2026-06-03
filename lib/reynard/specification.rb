@@ -138,7 +138,7 @@ class Reynard
     # rubocop:enable Metrics/MethodLength
 
     def basepath
-      File.dirname(File.expand_path(@filename))
+      File.dirname(File.realpath(File.expand_path(@filename)))
     end
   end
 end

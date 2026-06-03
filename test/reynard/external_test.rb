@@ -4,9 +4,20 @@ require_relative '../test_helper'
 
 class Reynard
   class ExternalTest < Reynard::Test
+    test 'raises an exception when attempting to access a non-existent file' do
+      assert_raises(Errno::ENOENT) do
+        External.new(
+          basepath: FILES_ROOT, path: FILES_ROOT, ref: 'non-existent.txt'
+        ).data
+      end
+    end
+
     test 'raises an exception when attempting to access a file not relative to specification' do
       assert_raises(RuntimeError) do
-        External.new(basepath: FILES_ROOT, path: FILES_ROOT, ref: '../../../passwords.txt').data
+        relative_path = '../' * FILES_ROOT.split('/').size
+        External.new(
+          basepath: FILES_ROOT, path: FILES_ROOT, ref: "#{relative_path}etc/hosts"
+        ).data
       end
     end
 

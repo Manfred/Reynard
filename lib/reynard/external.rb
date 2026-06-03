@@ -15,7 +15,7 @@ class Reynard
       @basepath = basepath
       @path = path
       @relative_path, @anchor = ref.split('#', 2)
-      @filename = File.expand_path(@relative_path, @path)
+      @filename = File.realpath(File.expand_path(@relative_path, @path))
     end
 
     def path
